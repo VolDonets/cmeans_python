@@ -1,7 +1,24 @@
+"""Cluster centers processing
+
+This script contains functions for generating random cluster centers or for moving cluster centers
+
+Functions:
+    * random_cluster_centers - just generate random cluster centers
+    * random_cluster_centers_from_entries - takes random entries as cluster centers
+    * k_means_centers_moving - moves cluster centers by k-means algorithm
+    * c_means_centers_moving - moves cluster centers by c-means algorithm
+"""
+
 import random
 
 
 def random_cluster_centers(mat_entries, var_count_clusters):
+    """
+    :param mat_entries: vector of entry vectors
+    :param var_count_clusters: - count clusters
+    :return: vector of cluster centers vectors
+    """
+
     mat_cluster_centers = []
     vec_min_entry = []
     vec_max_entry = []
@@ -26,6 +43,12 @@ def random_cluster_centers(mat_entries, var_count_clusters):
 
 
 def random_cluster_centers_from_entries(mat_entries, var_count_clusters):
+    """
+    :param mat_entries: vector of entry vectors
+    :param var_count_clusters: - count clusters
+    :return: vector of cluster centers vectors
+    """
+
     mat_cluster_centers = []
     for i in range(var_count_clusters):
         var_entry_inx = random.randint(0, len(mat_entries))
@@ -34,6 +57,14 @@ def random_cluster_centers_from_entries(mat_entries, var_count_clusters):
 
 
 def k_means_centers_moving(mat_cluster_centers, mat_entries, mat_cluster_entry_indexes):
+    """
+    :param mat_cluster_centers: vector of cluster centers vectors
+    :param mat_entries: vector of entry vectors
+    :param mat_cluster_entry_indexes: vector of vectors with indexes
+           of entries (in mat_entries) for entries of each cluster
+    :return: vector of cluster centers vectors
+    """
+
     for cl_num in range(len(mat_cluster_centers)):
         for i in range(len(mat_cluster_centers[0])):
             mat_cluster_centers[cl_num][i] = 0.0
@@ -48,6 +79,15 @@ def k_means_centers_moving(mat_cluster_centers, mat_entries, mat_cluster_entry_i
 
 
 def c_means_centers_moving(mat_cluster_centers, mat_entries, mat_membership, mat_cluster_entry_indexes):
+    """
+    :param mat_cluster_centers: vector of cluster centers vectors
+    :param mat_entries: vector of entry vectors
+    :param mat_membership: vector of vectors with membership values for each cluster
+    :param mat_cluster_entry_indexes: vector of vectors with indexes
+           of entries (in mat_entries) for entries of each cluster
+    :return: vector of cluster centers vectors
+    """
+
     for cl in range(len(mat_cluster_centers)):
         var_membership_sum = 0.000001
         for en_num in mat_cluster_entry_indexes[cl]:

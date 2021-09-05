@@ -1,3 +1,12 @@
+""" Distributions
+
+This script contains code for calculating distributions
+
+Functions:
+    * cauchy_distribution
+    * own_old_distribution
+"""
+
 import math
 
 

@@ -1,3 +1,13 @@
+"""Distances
+
+This script contains function for calculating distances
+
+Functions:
+* euclidean_distance
+* manhattan_distance
+* mahalanobis_distance
+"""
+
 from scipy.spatial import distance
 
 

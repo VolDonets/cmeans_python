@@ -1,3 +1,11 @@
+"""Divergences (like information distance
+
+Functions:
+    * kulback_leibler_divergence
+    * jensen_shannon_divergence
+    * cross_entropy
+"""
+
 import math
 
 

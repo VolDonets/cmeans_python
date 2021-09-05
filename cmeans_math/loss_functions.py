@@ -1,3 +1,16 @@
+"""Loss functions
+
+This script contains some loss functions
+
+Functions:
+    * simple_manhattan_loss
+    * manhattan_loss
+    * simple_mahalanobis_loss
+    * mahalanobis_loss
+    * inverse_mahalanobis_loss
+    * divergence_loss
+"""
+
 import distances
 
 

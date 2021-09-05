@@ -1,8 +1,27 @@
+"""Cluster assignment
+
+This script contains functions for entries assignment for each clusters (that means to do clustering)
+
+Functions: 
+    * manhattan_cluster_assignment
+    * euclidean_cluster_assignment
+    * mahalanobis_cluster_assignment
+    * mahalanobis_cauchy_cluster_assignment
+    * mahalanobis_own_old_distribution_cluster_assignment
+"""
+
 import distances
 import distributions
 
 
 def manhattan_cluster_assignment(mat_entries, mat_cluster_centers):
+    """
+    :param mat_entries: vector of entry vectors
+    :param mat_cluster_centers: vector of cluster centers vectors
+    :return: matrix: vector of vectors with indexes 
+           of entries (in mat_entries) for entries of each cluster
+    """
+
     mat_cluster_entry_indexes = []
     for cl_inx in range(len(mat_cluster_centers)):
         mat_cluster_entry_indexes.append([])
@@ -18,6 +37,13 @@ def manhattan_cluster_assignment(mat_entries, mat_cluster_centers):
 
 
 def euclidean_cluster_assignment(mat_entries, mat_cluster_centers):
+    """
+    :param mat_entries: vector of entry vectors
+    :param mat_cluster_centers: vector of cluster centers vectors
+    :return: matrix: vector of vectors with indexes
+           of entries (in mat_entries) for entries of each cluster
+    """
+
     mat_cluster_entry_indexes = []
     for cl_inx in range(len(mat_cluster_centers)):
         mat_cluster_entry_indexes.append([])
@@ -33,6 +59,14 @@ def euclidean_cluster_assignment(mat_entries, mat_cluster_centers):
 
 
 def mahalanobis_cluster_assignment(mat_entries, mat_cluster_centers, ten_covariances):
+    """
+    :param mat_entries: vector of entry vectors
+    :param mat_cluster_centers: vector of cluster centers vectors
+    :param ten_covariances: vector of covariance matrices
+    :return: matrix: vector of vectors with indexes
+           of entries (in mat_entries) for entries of each cluster
+    """
+
     mat_cluster_entry_indexes = []
     for cl_inx in range(len(mat_cluster_centers)):
         mat_cluster_entry_indexes.append([])
@@ -49,6 +83,14 @@ def mahalanobis_cluster_assignment(mat_entries, mat_cluster_centers, ten_covaria
 
 
 def mahalanobis_cauchy_cluster_assignment(mat_entries, mat_cluster_centers, ten_covariances):
+    """
+    :param mat_entries: vector of entry vectors
+    :param mat_cluster_centers: vector of cluster centers vectors
+    :param ten_covariances: vector of covariance matrices
+    :return: matrix: vector of vectors with indexes
+             of entries (in mat_entries) for entries of each cluster
+    """
+
     mat_cluster_entry_indexes = []
     for cl_inx in range(len(mat_cluster_centers)):
         mat_cluster_entry_indexes.append([])
@@ -67,6 +109,14 @@ def mahalanobis_cauchy_cluster_assignment(mat_entries, mat_cluster_centers, ten_
 
 
 def mahalanobis_own_old_distribution_cluster_assignment(mat_entries, mat_cluster_centers, ten_covariances):
+    """
+    :param mat_entries: vector of entry vectors
+    :param mat_cluster_centers: vector of cluster centers vectors
+    :param ten_covariances: vector of covariance matrices
+    :return: matrix: vector of vectors with indexes
+             of entries (in mat_entries) for entries of each cluster
+    """
+
     mat_cluster_entry_indexes = []
     for cl_inx in range(len(mat_cluster_centers)):
         mat_cluster_entry_indexes.append([])
