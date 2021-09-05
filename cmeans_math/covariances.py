@@ -20,10 +20,10 @@ def np_inverse_covariance(npmat_covariance):
     return linalg.inv(npmat_covariance)
 
 
-def cluster_covariances(mat_entries, ten_cluster_indexes):
+def cluster_covariances(mat_entries, mat_cluster_entry_indexes):
     ten_covariances = []
-    for i in range(len(ten_cluster_indexes)):
-        npmat_covariance = np_covariance_matrix(mat_entries, ten_cluster_indexes[i])
+    for i in range(len(mat_cluster_entry_indexes)):
+        npmat_covariance = np_covariance_matrix(mat_entries, mat_cluster_entry_indexes[i])
         npmat_covariance = np_inverse_covariance(npmat_covariance)
         ten_covariances.append(npmat_covariance.tolist())
     return ten_covariances
