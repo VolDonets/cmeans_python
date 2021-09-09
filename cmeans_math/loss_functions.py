@@ -11,54 +11,30 @@ Functions:
     * divergence_loss
 """
 
-import distances
+import cluster_loss_functions
 
 
 def simple_manhattan_loss(mat_entries, mat_cluster_centers):
-    var_loss = 0.0
-    for i in range(len(mat_cluster_centers)):
-        for j in range(len(mat_entries)):
-            var_loss += distances.manhattan_distance(mat_cluster_centers[i], mat_entries[j])
-    return var_loss
+    return sum(cluster_loss_functions.simple_manhattan_clusters_loss(mat_entries, mat_cluster_centers))
 
 
 def manhattan_loss(mat_membership, mat_entries, mat_cluster_centers):
-    var_loss = 0.0
-    for i in range(len(mat_cluster_centers)):
-        for j in range(len(mat_entries)):
-            var_loss += mat_membership[i][j] * distances.manhattan_distance(mat_cluster_centers[i], mat_entries[j])
-    return var_loss
+    return sum(cluster_loss_functions.manhattan_clusters_loss(mat_membership, mat_entries, mat_cluster_centers))
 
 
 def simple_mahalanobis_loss(mat_entries, mat_cluster_centers, ten_covariances):
-    var_loss = 0.0
-    for i in range(len(mat_cluster_centers)):
-        for j in range(len(mat_entries)):
-            var_loss += distances.mahalanobis_distance(mat_entries[j], mat_cluster_centers[i], ten_covariances[i])
-    return var_loss
+    return sum(cluster_loss_functions.simple_mahalanobis_clusters_loss(mat_entries,
+                                                                       mat_cluster_centers, ten_covariances))
 
 
 def mahalanobis_loss(mat_membership, mat_entries, mat_cluster_centers, ten_covariances):
-    var_loss = 0.0
-    for i in range(len(mat_cluster_centers)):
-        for j in range(len(mat_entries)):
-            var_loss += mat_membership[i][j] * \
-                        distances.mahalanobis_distance(mat_entries[j], mat_cluster_centers[i], ten_covariances[i])
-    return var_loss
+    return sum(cluster_loss_functions.mahalanobis_clusters_loss(mat_membership, mat_entries, mat_cluster_centers))
 
 
 def inverse_mahalanobis_loss(mat_membership, mat_entries, mat_cluster_centers, ten_covariances):
-    var_loss = 0.0
-    for i in range(len(mat_cluster_centers)):
-        for j in range(len(mat_entries)):
-            var_loss += (1.0 / mat_membership[i][j]) * \
-                        distances.mahalanobis_distance(mat_entries[j], mat_cluster_centers[i], ten_covariances[i])
-    return var_loss
+    return sum(cluster_loss_functions.inverse_mahalanobis_clusters_loss(mat_membership, mat_entries,
+                                                                        mat_cluster_centers, ten_covariances))
 
 
 def divergence_loss(mat_divergences):
-    var_loss = 0.0
-    for i in range(len(mat_divergences)):
-        for j in range(len(mat_divergences[0])):
-            var_loss -= mat_divergences[i][j]
-    return var_loss
+    return sum(cluster_loss_functions.divergence_clusters_loss(mat_divergences))
