@@ -50,9 +50,13 @@ def random_cluster_centers_from_entries(mat_entries, var_count_clusters):
     """
 
     mat_cluster_centers = []
+    mat_cluster_centers_indexes = []
     for i in range(var_count_clusters):
-        var_entry_inx = random.randint(0, len(mat_entries))
-        mat_cluster_centers.append(mat_entries[var_entry_inx].copy())
+        var_entry_inx = random.randint(0, len(mat_entries) - 1)
+        while var_entry_inx in mat_cluster_centers_indexes:
+            var_entry_inx = random.randint(0, len(mat_entries) - 1)
+        mat_cluster_centers_indexes.append(var_entry_inx)
+        mat_cluster_centers.append(mat_entries[var_entry_inx][:])
     return mat_cluster_centers
 
 
