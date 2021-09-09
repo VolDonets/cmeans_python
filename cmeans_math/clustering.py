@@ -3,7 +3,7 @@ import entry_cluster_assignment
 import covariances
 import memberships
 import accuracies
-
+import cluster_loss_functions
 
 def mahalanobis_clustering(mat_entries, var_count_clusters, vec_correct_entry_class):
     mat_cluster_centers = cluster_centers.random_cluster_centers(mat_entries, var_count_clusters)
@@ -47,4 +47,12 @@ def cluster_evolve_clustering(mat_entries, var_count_clusters, vec_correct_entry
     mat_cluster_entry_indexes = entry_cluster_assignment.manhattan_cluster_assignment(mat_entries, mat_cluster_centers)
     ten_covariances = covariances.cluster_covariances(mat_entries, mat_cluster_entry_indexes, mat_cluster_centers)
     mat_membership = memberships.mahalanobis_membership_matrix(mat_entries, mat_cluster_centers, ten_covariances)
+    vec_clusters_loss = cluster_loss_functions.mahalanobis_clusters_loss(mat_membership, mat_entries,
+                                                                         mat_cluster_centers, ten_covariances)
+    print(vec_clusters_loss)
 
+    # loop for removing useless cluster centers
+    while var_init_count_clusters > var_count_clusters:
+        var_max_loss_cluster_index = max(vec_clusters_loss)
+        print(var_max_loss_cluster_index)
+        exit(0)
