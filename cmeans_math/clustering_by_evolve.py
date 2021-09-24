@@ -53,6 +53,10 @@ def clustering_by_manhattan_density(mat_entries, var_count_clusters, vec_correct
                                                                      mat_cluster_entry_indexes)
         var_init_count_clusters -= 1
 
+        if var_init_count_clusters == var_count_clusters:
+            vec_total_densities.append(sum(vec_clusters_densities))
+            vec_clusters_count.append(var_init_count_clusters)
+
     var_accuracy = accuracies.accuracy(mat_cluster_entry_indexes, vec_correct_entry_class)
     mat_confusion = accuracies.confusion_matrix(mat_cluster_entry_indexes, vec_correct_entry_class)
 
@@ -115,6 +119,10 @@ def clustering_by_euclid_density(mat_entries, var_count_clusters, vec_correct_en
         vec_clusters_densities = density_functions.euclid_density(mat_membership, mat_entries, mat_cluster_centers,
                                                                      mat_cluster_entry_indexes)
         var_init_count_clusters -= 1
+
+        if var_init_count_clusters == var_count_clusters:
+            vec_total_densities.append(sum(vec_clusters_densities))
+            vec_clusters_count.append(var_init_count_clusters)
 
     var_accuracy = accuracies.accuracy(mat_cluster_entry_indexes, vec_correct_entry_class)
     mat_confusion = accuracies.confusion_matrix(mat_cluster_entry_indexes, vec_correct_entry_class)
@@ -181,6 +189,10 @@ def clustering_by_simple_mahalanobis_density(mat_entries, var_count_clusters, ve
                                                                               mat_cluster_entry_indexes)
         var_init_count_clusters -= 1
 
+        if var_init_count_clusters == var_count_clusters:
+            vec_total_densities.append(sum(vec_clusters_densities))
+            vec_clusters_count.append(var_init_count_clusters)
+
     var_accuracy = accuracies.accuracy(mat_cluster_entry_indexes, vec_correct_entry_class)
     mat_confusion = accuracies.confusion_matrix(mat_cluster_entry_indexes, vec_correct_entry_class)
 
@@ -243,6 +255,10 @@ def clustering_by_mahalanobis_density(mat_entries, var_count_clusters, vec_corre
         vec_clusters_densities = density_functions.mahalanobis_density(mat_membership, mat_entries, mat_cluster_centers,
                                                                        ten_covariances, mat_cluster_entry_indexes)
         var_init_count_clusters -= 1
+
+        if var_init_count_clusters == var_count_clusters:
+            vec_total_densities.append(sum(vec_clusters_densities))
+            vec_clusters_count.append(var_init_count_clusters)
 
     var_accuracy = accuracies.accuracy(mat_cluster_entry_indexes, vec_correct_entry_class)
     mat_confusion = accuracies.confusion_matrix(mat_cluster_entry_indexes, vec_correct_entry_class)
@@ -309,6 +325,10 @@ def clustering_by_inverse_mahalanobis_density(mat_entries, var_count_clusters,
                                                                                mat_cluster_centers, ten_covariances,
                                                                                mat_cluster_entry_indexes)
         var_init_count_clusters -= 1
+
+        if var_init_count_clusters == var_count_clusters:
+            vec_total_densities.append(sum(vec_clusters_densities))
+            vec_clusters_count.append(var_init_count_clusters)
 
     var_accuracy = accuracies.accuracy(mat_cluster_entry_indexes, vec_correct_entry_class)
     mat_confusion = accuracies.confusion_matrix(mat_cluster_entry_indexes, vec_correct_entry_class)
