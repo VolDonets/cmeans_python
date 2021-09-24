@@ -80,6 +80,7 @@ def k_means_centers_moving(mat_cluster_centers, mat_entries, mat_cluster_entry_i
         var_ce_count = float(len(mat_cluster_entry_indexes[cl_num]))
         for i in range(len(mat_cluster_centers[0])):
             mat_cluster_centers[cl_num][i] /= var_ce_count
+    return mat_cluster_centers
 
 
 def c_means_centers_moving(mat_cluster_centers, mat_entries, mat_membership, mat_cluster_entry_indexes):
@@ -103,5 +104,5 @@ def c_means_centers_moving(mat_cluster_centers, mat_entries, mat_membership, mat
                 mat_cluster_centers[cl][i] += mat_entries[en_num][i] * mat_membership[cl][en_num]
         for i in range(len(mat_cluster_centers[cl])):
             mat_cluster_centers[cl][i] /= var_membership_sum
-
+    return mat_cluster_centers
 
