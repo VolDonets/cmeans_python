@@ -137,9 +137,9 @@ def norm_membership_matrix_for_clusters(mat_membership):
             var_sum_param += mat_membership[j][i]
         var_sum_param /= len(mat_membership[0])
         vec_summarized_parameters.append(var_sum_param)
-    for i in range(len(mat_membership[0])):
+    for j in range(len(mat_membership)):
         vec_norm_membership = []
-        for j in range(len(mat_membership)):
+        for i in range(len(mat_membership[0])):
             var_norm_membership = mat_membership[j][i] / vec_summarized_parameters[j]
             vec_norm_membership.append(var_norm_membership)
         mat_norm_membership.append(vec_norm_membership)
@@ -156,16 +156,16 @@ def norm_membership_matrix_for_entries(mat_membership):
 
     vec_summarized_parameters = []
     mat_norm_membership = []
-    for j in range(len(mat_membership[0])):
+    for i in range(len(mat_membership[0])):
         var_sum_param = 0.0
-        for i in range(len(mat_membership)):
-            var_sum_param += mat_membership[i][j]
+        for j in range(len(mat_membership)):
+            var_sum_param += mat_membership[j][i]
         var_sum_param /= len(mat_membership)
         vec_summarized_parameters.append(var_sum_param)
-    for i in range(len(mat_membership[0])):
+    for j in range(len(mat_membership)):
         vec_norm_membership = []
-        for j in range(len(mat_membership)):
-            var_norm_membership = mat_membership[j][i] / vec_summarized_parameters[j]
+        for i in range(len(mat_membership[0])):
+            var_norm_membership = mat_membership[j][i] / vec_summarized_parameters[i]
             vec_norm_membership.append(var_norm_membership)
         mat_norm_membership.append(vec_norm_membership)
     return mat_norm_membership
