@@ -8,18 +8,18 @@ class BasicDataSaver:
         self.vec_check = vec_check
 
 
-def load_iris_data():
-    data = np.loadtxt("test_data/iris_data/names.txt", dtype='str', delimiter='|')
+def load_iris_data(path=""):
+    data = np.loadtxt(path + "test_data/iris_data/names.txt", dtype='str', delimiter='|')
     vec_names = data.tolist()
     vec_names.pop(0)
 
-    data = np.loadtxt("test_data/iris_data/data.txt", dtype='float', delimiter='|')
+    data = np.loadtxt(path + "test_data/iris_data/data.txt", dtype='float', delimiter='|')
     mat_data = data.tolist()
 
     for vec_data in mat_data:
         vec_data.pop(0)
 
-    data = np.loadtxt("test_data/iris_data/check.txt", dtype='str', delimiter='|')
+    data = np.loadtxt(path + "test_data/iris_data/check.txt", dtype='str', delimiter='|')
     vec_name_check = data.tolist()
 
     vec_check = []
