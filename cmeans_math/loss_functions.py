@@ -15,7 +15,7 @@ import distances
 
 def manhattan_loss(mat_membership, mat_entries, mat_cluster_centers):
     """
-    manhattan_loss = ∑j ∑i w_ji * d_manhattan^2(entry_i, center_j)
+    manhattan_loss = ∑j ∑i w_ji * d_manhattan^2(entry_i, center_j) / (count_clusters * count_entries)
 
     :param mat_membership: vector of vector membership values for the each cluster by entry
     :param mat_entries: vector of entry vectors
@@ -28,12 +28,15 @@ def manhattan_loss(mat_membership, mat_entries, mat_cluster_centers):
         for i in range(len(mat_entries)):
             var_distance = distances.manhattan_distance(mat_cluster_centers[j], mat_entries[i]) ** 2
             var_loss += mat_membership[j][i] * var_distance
+
+    var_loss /= len(mat_entries)
+    var_loss /= len(mat_cluster_centers)
     return var_loss
 
 
 def euclid_loss(mat_membership, mat_entries, mat_cluster_centers):
     """
-    euclid_loss = ∑j ∑i w_ji * d_euclid^2(entry_i, center_j)
+    euclid_loss = ∑j ∑i w_ji * d_euclid^2(entry_i, center_j) / (count_clusters * count_entries)
 
     :param mat_membership: vector of vector membership values for the each cluster by entry
     :param mat_entries: vector of entry vectors
@@ -46,12 +49,15 @@ def euclid_loss(mat_membership, mat_entries, mat_cluster_centers):
         for i in range(len(mat_entries)):
             var_distance = distances.euclidean_distance(mat_cluster_centers[j], mat_entries[i]) ** 2
             var_loss += mat_membership[j][i] * var_distance
+
+    var_loss /= len(mat_entries)
+    var_loss /= len(mat_cluster_centers)
     return var_loss
 
 
 def mahalanobis_loss(mat_membership, mat_entries, mat_cluster_centers, ten_covariances):
     """
-    mahalanobis_loss = ∑j ∑i w_ji * d_mahalanobis^2(center_j, entry_i, covariance_j)
+    mahalanobis_loss = ∑j ∑i w_ji * d_mahalanobis^2(center_j, entry_i, covariance_j) / (count_clusters * count_entries)
 
     :param mat_membership: vector of vector membership values for the each cluster by entry
     :param mat_entries: vector of entry vectors
@@ -65,12 +71,16 @@ def mahalanobis_loss(mat_membership, mat_entries, mat_cluster_centers, ten_covar
         for i in range(len(mat_entries)):
             var_distance = distances.mahalanobis_distance(mat_cluster_centers[j], mat_entries[i], ten_covariances[j]) ** 2
             var_loss += mat_membership[j][i] * var_distance
+
+    var_loss /= len(mat_entries)
+    var_loss /= len(mat_cluster_centers)
     return var_loss
 
 
 def inverse_mahalanobis_loss(mat_membership, mat_entries, mat_cluster_centers, ten_covariances):
     """
     inverse_mahalanobis_loss = ∑j ∑i w_ji^(-1) * d_mahalanobis^2(center_j, entry_i, covariance_j)
+                                                / (count_clusters * count_entries)
 
     :param mat_membership: vector of vector membership values for the each cluster by entry
     :param mat_entries: vector of entry vectors
@@ -85,6 +95,9 @@ def inverse_mahalanobis_loss(mat_membership, mat_entries, mat_cluster_centers, t
             var_distance = distances.mahalanobis_distance(mat_cluster_centers[j], mat_entries[i],
                                                           ten_covariances[j]) ** 2
             var_loss += var_distance / mat_membership[j][i]
+
+    var_loss /= len(mat_entries)
+    var_loss /= len(mat_cluster_centers)
     return var_loss
 
 
