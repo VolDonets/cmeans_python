@@ -10,6 +10,10 @@ import loss_functions
 import divergences
 
 
+MAX_LOSS_DELTA = 0.01
+MAX_COUNT_TRAINING_STEPS = 30
+
+
 def clustering_without_loss(mat_entries, var_count_clusters,
                             vec_correct_entry_class, var_count_studying_steps=10):
     mat_cluster_centers = cluster_centers.random_cluster_centers(mat_entries, var_count_clusters)
@@ -83,7 +87,7 @@ def clustering_manhattan_loss(mat_entries, var_count_clusters,
     print(mat_membership)
 
     i = 0
-    while math.fabs(var_old_loss - var_loss) > 5:
+    while math.fabs(var_old_loss - var_loss) > MAX_LOSS_DELTA and i <= MAX_COUNT_TRAINING_STEPS:
         print("\n\n\nstep:", i, "accuracy:", var_accuracy, "loss:", var_loss)
         vec_steps.append(i)
         vec_losses.append(var_loss)
@@ -143,7 +147,7 @@ def clustering_euclid_loss(mat_entries, var_count_clusters,
     print(mat_membership)
 
     i = 0
-    while math.fabs(var_old_loss - var_loss) > 5:
+    while math.fabs(var_old_loss - var_loss) > MAX_LOSS_DELTA and i <= MAX_COUNT_TRAINING_STEPS:
         print("\n\n\nstep:", i, "accuracy:", var_accuracy, "loss:", var_loss)
         vec_steps.append(i)
         vec_losses.append(var_loss)
@@ -169,9 +173,6 @@ def clustering_euclid_loss(mat_entries, var_count_clusters,
 
         print(mat_membership)
         print(mat_cluster_entry_indexes)
-
-        if i > 30:
-            break
 
     return clustering_results.ClusteringResults(mat_cluster_centers=mat_cluster_centers,
                                                 mat_cluster_entry_indexes=mat_cluster_entry_indexes,
@@ -206,7 +207,7 @@ def clustering_mahalanobis_loss(mat_entries, var_count_clusters,
     print(mat_membership)
 
     i = 0
-    while math.fabs(var_old_loss - var_loss) > 5:
+    while math.fabs(var_old_loss - var_loss) > MAX_LOSS_DELTA and i <= MAX_COUNT_TRAINING_STEPS:
         print("\n\n\nstep:", i, "accuracy:", var_accuracy, "loss:", var_loss)
         vec_steps.append(i)
         vec_losses.append(var_loss)
@@ -232,9 +233,6 @@ def clustering_mahalanobis_loss(mat_entries, var_count_clusters,
 
         print(mat_membership)
         print(mat_cluster_entry_indexes)
-
-        if i > 30:
-            break
 
     return clustering_results.ClusteringResults(mat_cluster_centers=mat_cluster_centers,
                                                 mat_cluster_entry_indexes=mat_cluster_entry_indexes,
@@ -269,7 +267,7 @@ def clustering_inverse_mahalanobis_loss(mat_entries, var_count_clusters,
     print(mat_membership)
 
     i = 0
-    while math.fabs(var_old_loss - var_loss) > 5:
+    while math.fabs(var_old_loss - var_loss) > MAX_LOSS_DELTA and i <= MAX_COUNT_TRAINING_STEPS:
         print("\n\n\nstep:", i, "accuracy:", var_accuracy, "loss:", var_loss)
         vec_steps.append(i)
         vec_losses.append(var_loss)
@@ -362,7 +360,7 @@ def clustering_divergence_loss(mat_entries, var_count_clusters,
 
     ##########################
 
-    while math.fabs(var_old_loss - var_loss) > 0.1:
+    while math.fabs(var_old_loss - var_loss) > MAX_LOSS_DELTA and i <= MAX_COUNT_TRAINING_STEPS:
         print("\n\n\nstep:", i, "accuracy:", var_accuracy, "loss:", var_loss)
         vec_steps.append(i)
         vec_losses.append(var_loss)
@@ -391,9 +389,6 @@ def clustering_divergence_loss(mat_entries, var_count_clusters,
 
         print(mat_membership)
         print(mat_cluster_entry_indexes)
-
-        if i > 30:
-            break
 
     return clustering_results.ClusteringResults(mat_cluster_centers=mat_cluster_centers,
                                                 mat_cluster_entry_indexes=mat_cluster_entry_indexes,
