@@ -140,7 +140,7 @@ def inverse_mahalanobis_density(mat_membership, mat_entries, mat_cluster_centers
             for i in mat_cluster_entry_indexes[j]:
                 var_distance = distances.mahalanobis_distance(mat_cluster_centers[j],
                                                               mat_entries[i], ten_covariances[j]) ** 2
-                var_density += var_distance / mat_membership[j][i]
+                var_density += var_distance / (mat_membership[j][i] + 0.000001)
             var_density /= len(mat_cluster_entry_indexes[j])
         else:
             var_density = BIG_NUMBER
