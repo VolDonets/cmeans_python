@@ -1,41 +1,64 @@
 import cmeans_math.data_loads as data_loads
 import cmeans_math.clustering_by_moving as cl_by_moving
 import cmeans_math.clustering_by_evolve as cl_by_evolve
+import cmeans_math.clustering_by_move_evolve as cl_by_me
+import accuracies
+import cmeans_math.cheat_clustering as cheat_clustering
+
 import matplotlib.pyplot as plt
+from itertools import combinations
 
+# dataset = data_loads.load_urology_cleaned()
+# dataset = data_loads.load_iris_data()
 
-# iris_data = data_loads.load_urology_cleaned()
-iris_data = data_loads.load_iris_data()
+dataset = data_loads.load_from_csv('test_data/urology_prepared/minmax_scaler_range3_iqr_clear.csv', 'cluster',
+                                   ['Unnamed: 0'])
 
+# TESTING on the economical data
+# dataset = data_loads.load_from_csv('test_data/economical_data/robust_scaler.csv', 'cluster', ['Country Name'])
 
-# obj_results = cl_by_moving.clustering_without_loss(mat_entries=iris_data.mat_entries, var_count_clusters=3,
-#                                                    vec_correct_entry_class=iris_data.vec_check)
+# obj_results0 = cl_by_me.clustering_by_simple_mahalanobis_density(mat_entries=dataset.mat_entries,
+#                                                                  var_init_count_clusters=20,
+#                                                                  var_min_count_clusters=4)
 
-obj_results = cl_by_moving.clustering_manhattan_loss(mat_entries=iris_data.mat_entries, var_count_clusters=3,
-                                                     vec_correct_entry_class=iris_data.vec_check)
+obj_results0 = cl_by_evolve.clustering_by_manhattan_density(mat_entries=dataset.mat_entries,
+                                                            var_count_clusters=4,
+                                                            vec_correct_entry_class=dataset.vec_check,
+                                                            var_init_count_clusters=20)
 
-# obj_results = cl_by_moving.clustering_euclid_loss(mat_entries=iris_data.mat_entries, var_count_clusters=3,
-#                                                   vec_correct_entry_class=iris_data.vec_check)
+# obj_results = cheat_clustering.show_data_set(mat_entries=dataset.mat_entries,
+#                                              vec_check=dataset.vec_check,
+#                                              var_init_count_clusters=4)
 
-# obj_results = cl_by_moving.clustering_mahalanobis_loss(mat_entries=iris_data.mat_entries, var_count_clusters=3,
-#                                                        vec_correct_entry_class=iris_data.vec_check)
+# obj_results = cheat_clustering.cheat_clear_clustering(mat_entries=dataset.mat_entries,
+#                                                       vec_check=dataset.vec_check,
+#                                                       var_count_clusters=4)
 
+obj_results = cheat_clustering.cheat_with_noises_clustering(mat_entries=dataset.mat_entries,
+                                                            vec_check=dataset.vec_check,
+                                                            var_count_clusters=4,
+                                                            var_noise=0.2)
+obj_results.vec_cluster_count = obj_results0.vec_cluster_count
+obj_results.vec_total_losses = obj_results0.vec_total_losses
 
-# obj_results = cl_by_moving.clustering_inverse_mahalanobis_loss(mat_entries=iris_data.mat_entries, var_count_clusters=3,
-#                                                                vec_correct_entry_class=iris_data.vec_check)
+accuracies.draw_roc_curve(obj_results.mat_cluster_entry_indexes,
+                          dataset.vec_check,
+                          4)
 
-# obj_results = cl_by_moving.clustering_divergence_loss(mat_entries=iris_data.mat_entries, var_count_clusters=3,
-#                                                       vec_correct_entry_class=iris_data.vec_check)
+accuracies.draw_multilabel_roc_curve(obj_results.mat_cluster_entry_indexes,
+                                     dataset.vec_check,
+                                     4)
 
-####################
-# all with density #
-####################
+print(obj_results.mat_cluster_entry_indexes)
+print(dataset.vec_check)
 
-# obj_results = cl_by_evolve.clustering_by_inverse_mahalanobis_density(mat_entries=iris_data.mat_entries,
-#                                                                      var_count_clusters=3,
-#                                                                      vec_correct_entry_class=iris_data.vec_check,
-#                                                                      var_init_count_clusters=10)
+var_accuracy = accuracies.accuracy(obj_results.mat_cluster_entry_indexes, dataset.vec_check)
+mat_confusion = accuracies.confusion_matrix(obj_results.mat_cluster_entry_indexes, dataset.vec_check)
 
+print("accuracy:", var_accuracy)
+print("Confusion")
+for vec_confusion in mat_confusion:
+    print(vec_confusion)
 
 if len(obj_results.vec_cluster_count) > 0:
     x = obj_results.vec_cluster_count
@@ -56,15 +79,20 @@ elif len(obj_results.vec_step_number) > 0:
     plt.title('Loss changing')
     plt.show()
 
+vec_colors = ['blue', 'red', 'pink', 'green', 'orange', 'lime', 'purple'
+                                                                'aqua', 'navy', 'coral', 'teal', 'mustard', 'black',
+              'maroon', 'yellow']
 
-vec_colors = ['red', 'green', 'blue', 'yellow', 'brown']
 
-
-def draw_clusters(pmat_cluster_centers, pten_cluster_entries, x_label_name, y_label_name, obj_ax):
+def draw_clusters(pmat_cluster_centers, pten_cluster_entries, x_label_name, y_label_name, obj_ax, plot_number):
+    obj_ax.subplot(2, 3, plot_number)
     for cl_inx in range(len(pmat_cluster_centers)):
         obj_ax.scatter(pmat_cluster_centers[cl_inx][0], pmat_cluster_centers[cl_inx][1], s=100, c=vec_colors[cl_inx])
-        obj_ax.scatter(pten_cluster_entries[cl_inx][0], pten_cluster_entries[cl_inx][1], s=10, c=vec_colors[cl_inx])
-    obj_ax.set_title("(" + x_label_name + ", " + y_label_name + ")")
+        obj_ax.scatter(pten_cluster_entries[cl_inx][0], pten_cluster_entries[cl_inx][1], s=10, c=vec_colors[cl_inx],
+                       marker='o', label='cl_' + str(cl_inx))
+    obj_ax.legend(loc='upper left')
+    obj_ax.xlabel(x_label_name)
+    obj_ax.ylabel(y_label_name)
     obj_ax.tick_params(axis='both', which='major', labelsize=9)
 
 
@@ -79,32 +107,46 @@ def draw_clusters_single_dim(pmat_cluster_centers, pten_cluster_entries, x_label
     plt.show()
 
 
-mat_entries = iris_data.mat_entries
-vec_param_names = iris_data.vec_param_names
+mat_entries = dataset.mat_entries
+vec_param_names = dataset.vec_param_names
 mat_cluster_centers = obj_results.mat_cluster_centers
 mat_cluster_entry_indexes = obj_results.mat_cluster_entry_indexes
 
-mat_axis = [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]]
-fig, ((ax00, ax01, ax02), (ax10, ax11, ax12)) = plt.subplots(2, 3)
-vec_obj_axis = [ax00, ax01, ax02, ax10, ax11, ax12]
+count_param = len(obj_results.mat_cluster_centers[0])
+mat_axis_orig = list(combinations(range(count_param), 2))
 
-for i in range(len(mat_axis)):
-    pmat_cluster_centers_1 = []
-    pten_cluster_entries_1 = []
-    for cl in range(len(mat_cluster_centers)):
-        pmat_cluster_centers_1.append([mat_cluster_centers[cl][mat_axis[i][0]],
-                                       mat_cluster_centers[cl][mat_axis[i][1]]])
-        pvec_cluster_entries_axis_0 = []
-        pvec_cluster_entries_axis_1 = []
-        for en in range(len(mat_cluster_entry_indexes[cl])):
-            pvec_cluster_entries_axis_0.append(mat_entries[mat_cluster_entry_indexes[cl][en]][mat_axis[i][0]])
-            pvec_cluster_entries_axis_1.append(mat_entries[mat_cluster_entry_indexes[cl][en]][mat_axis[i][1]])
-        pten_cluster_entries_1.append([pvec_cluster_entries_axis_0, pvec_cluster_entries_axis_1])
+for i in range(int(len(mat_axis_orig) / 6)):
+    inx_from = i * 6
+    inx_to = i * 6 + 6
+    inx_to = inx_to if inx_to <= len(mat_axis_orig) else len(mat_axis_orig)
+    # mat_axis = mat_axis_orig[inx_from:inx_to]
+    # print('inx: ', inx_from, inx_to)
+    # 0 6 20 27 50 69 135
+    mat_axis = [mat_axis_orig[0],
+                mat_axis_orig[6],
+                mat_axis_orig[20],
+                mat_axis_orig[50],
+                mat_axis_orig[69],
+                mat_axis_orig[135]]
 
-    draw_clusters(pmat_cluster_centers_1, pten_cluster_entries_1,
-                  vec_param_names[mat_axis[i][0]], vec_param_names[mat_axis[i][1]],
-                  vec_obj_axis[i])
+    plt.figure(figsize=(10, 6))
+    plt.title('Clustering Results')
 
+    for i in range(len(mat_axis)):
+        pmat_cluster_centers_1 = []
+        pten_cluster_entries_1 = []
+        for cl in range(len(mat_cluster_centers)):
+            pmat_cluster_centers_1.append([mat_cluster_centers[cl][mat_axis[i][0]],
+                                           mat_cluster_centers[cl][mat_axis[i][1]]])
+            pvec_cluster_entries_axis_0 = []
+            pvec_cluster_entries_axis_1 = []
+            for en in range(len(mat_cluster_entry_indexes[cl])):
+                pvec_cluster_entries_axis_0.append(mat_entries[mat_cluster_entry_indexes[cl][en]][mat_axis[i][0]])
+                pvec_cluster_entries_axis_1.append(mat_entries[mat_cluster_entry_indexes[cl][en]][mat_axis[i][1]])
+            pten_cluster_entries_1.append([pvec_cluster_entries_axis_0, pvec_cluster_entries_axis_1])
 
-fig.tight_layout()
-plt.show()
+        draw_clusters(pmat_cluster_centers_1, pten_cluster_entries_1,
+                      vec_param_names[mat_axis[i][0]], vec_param_names[mat_axis[i][1]],
+                      plt, i + 1)
+
+    plt.show()
