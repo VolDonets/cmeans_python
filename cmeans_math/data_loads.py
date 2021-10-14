@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 
 class BasicDataSaver:
@@ -56,3 +57,28 @@ def load_urology_cleaned():
         vec_check.append(vec_check_only_names.index(x))
 
     return BasicDataSaver(vec_names, mat_data, vec_check)
+
+
+def load_from_csv(path_to_csv_file, class_name, vec_drop_column=[]):
+    csv_data = pd.read_csv(path_to_csv_file)
+    if len(vec_drop_column) > 0:
+        csv_data = csv_data.drop(columns=vec_drop_column)
+
+    vec_param_names = csv_data.columns.tolist()[:]
+    vec_param_names.remove(class_name)
+
+    vec_check = csv_data[class_name].tolist()
+
+    csv_data = csv_data.drop(columns=[class_name])
+    mat_entries = []
+    for i in range(csv_data.shape[0]):
+        mat_entries.append(csv_data.iloc[i, :].tolist())
+
+    return BasicDataSaver(vec_param_names, mat_entries, vec_check)
+
+
+if __name__ == "__main__":
+    data = load_from_csv('../test_data/urology_prepared/original_clear.csv', 'cluster', ['Unnamed: 0'])
+    print(data.vec_check)
+    print(data.vec_param_names)
+    print(data.mat_entries)
