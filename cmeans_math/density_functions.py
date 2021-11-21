@@ -18,6 +18,30 @@ import memberships
 BIG_NUMBER = 100.0
 
 
+def simple_manhattan_density(mat_entries, mat_cluster_centers, mat_cluster_entry_indexes):
+    """
+    manhattan_density_j = 1/(count i) ∑i d_manhattan^2(entry_i, center_j)
+
+    :param mat_entries: vector of entry vectors
+    :param mat_cluster_centers: vector of cluster centers vectors
+    :param mat_cluster_entry_indexes: vector of vectors with cluster entry indexes
+    :return: vector of manhattan densities
+    """
+
+    vec_densities = []
+    for j in range(len(mat_cluster_centers)):
+        var_density = 0.0
+        if len(mat_cluster_entry_indexes[j]) > 0:
+            for i in mat_cluster_entry_indexes[j]:
+                var_distance = distances.manhattan_distance(mat_cluster_centers[j], mat_entries[i])
+                var_density += var_distance
+            var_density /= len(mat_cluster_entry_indexes[j])
+        else:
+            var_density = BIG_NUMBER
+        vec_densities.append(var_density)
+    return vec_densities
+
+
 def manhattan_density(mat_membership, mat_entries, mat_cluster_centers, mat_cluster_entry_indexes):
     """
     manhattan_density_j = 1/(count i) ∑i w_ji * d_manhattan^2(entry_i, center_j)
