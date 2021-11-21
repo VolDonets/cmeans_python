@@ -16,6 +16,7 @@ Functions:
 
 import distances
 import distributions
+import divergences
 
 
 def euclid_membership_matrix(mat_entries, mat_cluster_centers):
@@ -96,6 +97,64 @@ def mahalanobis_cauchy_membership_matrix(mat_entries, mat_cluster_centers, ten_c
             var_distance = distributions.cauchy_distribution(1, var_distance)
             vec_cluster_distances.append(var_distance)
         mat_membership.append(vec_cluster_distances)
+    return mat_membership
+
+
+def kulback_leibler_membership_matrix(mat_entries, mat_cluster_centers, ten_covariances,
+                                      basic_distance="Manhattan"):
+    mat_membership = []
+    vec_absolute_center = [0.0] * len(mat_entries[0])
+    for vec_x in mat_entries:
+        for i in range(len(vec_x)):
+            vec_absolute_center[i] += vec_x[i]
+    for i in range(len(vec_absolute_center)):
+        vec_absolute_center[i] /= len(mat_entries)
+
+    for i in range(len(mat_cluster_centers)):
+        vec_cluster_distances = []
+        for j in range(len(mat_entries)):
+            var_x_dist = 0.0
+            var_cc_dist = 0.0
+            if basic_distance == "Manhattan":
+                var_x_dist = distances.manhattan_distance(vec_absolute_center, mat_entries[j])
+                var_cc_dist = distances.manhattan_distance(vec_absolute_center, mat_cluster_centers[i])
+            elif basic_distance == "Mahalanobis":
+                var_x_dist = distances.mahalanobis_distance(vec_absolute_center, mat_entries[j], ten_covariances[i])
+                var_cc_dist = distances.mahalanobis_distance(vec_absolute_center, mat_cluster_centers[i],
+                                                             ten_covariances[i])
+            var_distance = divergences.kulback_leibler_divergence(var_cc_dist, var_x_dist)
+            vec_cluster_distances.append(var_distance)
+        mat_membership.append(vec_cluster_distances)
+
+    return mat_membership
+
+
+def cross_entropy_membership_matrix(mat_entries, mat_cluster_centers, ten_covariances,
+                                    basic_distance="Manhattan"):
+    mat_membership = []
+    vec_absolute_center = [0.0] * len(mat_entries[0])
+    for vec_x in mat_entries:
+        for i in range(len(vec_x)):
+            vec_absolute_center[i] += vec_x[i]
+    for i in range(len(vec_absolute_center)):
+        vec_absolute_center[i] /= len(mat_entries)
+
+    for i in range(len(mat_cluster_centers)):
+        vec_cluster_distances = []
+        for j in range(len(mat_entries)):
+            var_x_dist = 0.0
+            var_cc_dist = 0.0
+            if basic_distance == "Manhattan":
+                var_x_dist = distances.manhattan_distance(vec_absolute_center, mat_entries[j])
+                var_cc_dist = distances.manhattan_distance(vec_absolute_center, mat_cluster_centers[i])
+            elif basic_distance == "Mahalanobis":
+                var_x_dist = distances.mahalanobis_distance(vec_absolute_center, mat_entries[j], ten_covariances[i])
+                var_cc_dist = distances.mahalanobis_distance(vec_absolute_center, mat_cluster_centers[i],
+                                                             ten_covariances[i])
+            var_distance = divergences.cross_entropy(var_cc_dist, var_x_dist)
+            vec_cluster_distances.append(var_distance)
+        mat_membership.append(vec_cluster_distances)
+
     return mat_membership
 
 

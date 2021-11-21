@@ -12,6 +12,7 @@ Functions:
 """
 
 import distances
+import memberships
 
 
 BIG_NUMBER = 100.0
@@ -141,6 +142,27 @@ def inverse_mahalanobis_density(mat_membership, mat_entries, mat_cluster_centers
                 var_distance = distances.mahalanobis_distance(mat_cluster_centers[j],
                                                               mat_entries[i], ten_covariances[j]) ** 2
                 var_density += var_distance / (mat_membership[j][i] + 0.000001)
+            var_density /= len(mat_cluster_entry_indexes[j])
+        else:
+            var_density = BIG_NUMBER
+        vec_densities.append(var_density)
+    return vec_densities
+
+
+def new_divergence_density(mat_entries, mat_cluster_centers,
+                           ten_covariances, mat_cluster_entry_indexes,
+                           get_divergence_membership_matrix_func=memberships.kulback_leibler_membership_matrix,
+                           basic_distance="Manhattan"):
+    vec_densities = []
+    mat_kl_membership = get_divergence_membership_matrix_func(mat_entries=mat_entries,
+                                                              mat_cluster_centers=mat_cluster_centers,
+                                                              ten_covariances=ten_covariances,
+                                                              basic_distance=basic_distance)
+    for j in range(len(mat_cluster_centers)):
+        var_density = 0.0
+        if len(mat_cluster_entry_indexes[j]) > 0:
+            for i in mat_cluster_entry_indexes[j]:
+                var_density += mat_kl_membership[j][i]
             var_density /= len(mat_cluster_entry_indexes[j])
         else:
             var_density = BIG_NUMBER
