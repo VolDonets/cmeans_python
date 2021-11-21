@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from sklearn.metrics import roc_curve, auc
 from numpy import interp
 from itertools import cycle
@@ -155,4 +156,60 @@ def draw_multilabel_roc_curve(mat_cluster_entry_indexes, vec_correct_entry_class
     plt.ylabel('True Positive Rate')
     plt.title('ROC curve for each class')
     plt.legend(loc="lower right")
+    plt.show()
+
+
+vec_draw_config = [('blue', 'o'), ('red', 'o'), ('pink', 'o'), ('green', 'o'), ('orange', 'o'), ('lime', 'o'),
+                   ('purple', 'o'), ('aqua', 'o'), ('navy', 'o'), ('coral', 'o'), ('teal', 'o'), ('mustard', 'o'),
+                   ('black', 'o'), ('maroon', 'o'), ('yellow', 'o')]
+vec_cluster_center_draw_config = [('blue', '^'), ('red', '^'), ('pink', '^'), ('green', '^'), ('orange', '^'),
+                                  ('lime', '^'), ('purple', '^'), ('aqua', '^'), ('navy', '^'), ('coral', '^'),
+                                  ('teal', '^'), ('mustard', '^'), ('black', '^'), ('maroon', '^'), ('yellow', '^')]
+
+
+def draw_3d_clusters(mat_cluster_centers, mat_entries, mat_cluster_entry_indexes,
+                     vec_param_names=['aaa', 'bbb', 'ccc'], vec_params=[0, 1, 2]):
+    mat_cc_ref = []
+    for inx in vec_params:
+        vec_cc_ref = []
+        for vec_cl in mat_cluster_centers:
+            vec_cc_ref.append(vec_cl[inx])
+        mat_cc_ref.append(vec_cc_ref)
+
+    ten_ce = []
+    for vec_indexes in mat_cluster_entry_indexes:
+        mat_ce = []
+        for inx in vec_indexes:
+            mat_ce.append(mat_entries[inx])
+        ten_ce.append(mat_ce)
+
+    ten_ce_ref = []
+    for mat_ce in ten_ce:
+        mat_ce_ref = []
+        for inx in vec_params:
+            vec_ce_ref = []
+            for vec_entry in mat_ce:
+                vec_ce_ref.append(vec_entry[inx])
+            mat_ce_ref.append(vec_ce_ref)
+        ten_ce_ref.append(mat_ce_ref)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # draw cluster centers
+    for inx in range(len(mat_cluster_centers)):
+        ax.scatter(mat_cc_ref[0][inx], mat_cc_ref[1][inx], mat_cc_ref[2][inx],
+                   c=vec_cluster_center_draw_config[inx][0],
+                   marker=vec_cluster_center_draw_config[inx][1])
+
+    # draw clusters elements
+    for inx in range(len(mat_cluster_centers)):
+        ax.scatter(ten_ce_ref[inx][0], ten_ce_ref[inx][1], ten_ce_ref[inx][2],
+                   c=vec_draw_config[inx][0],
+                   marker=vec_draw_config[inx][1])
+
+    ax.set_xlabel(vec_param_names[vec_params[0]])
+    ax.set_ylabel(vec_param_names[vec_params[1]])
+    ax.set_zlabel(vec_param_names[vec_params[2]])
+
     plt.show()
