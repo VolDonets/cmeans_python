@@ -26,7 +26,7 @@ def show_data_set(mat_entries, vec_check, var_init_count_clusters):
                                                 mat_cluster_entry_indexes=mat_cluster_entry_indexes)
 
 
-def cheat_clear_clustering(mat_entries, vec_check, var_count_clusters):
+def cheat_clear_clustering(mat_entries, vec_check, var_count_clusters, distance="Mahalanobis"):
     mat_cluster_entry_orig_indexes = []
     for i in range(var_count_clusters):
         mat_cluster_entry_orig_indexes.append([])
@@ -49,46 +49,21 @@ def cheat_clear_clustering(mat_entries, vec_check, var_count_clusters):
         for j in range(len(mat_entries[0])):
             mat_cluster_centers[i][j] /= len(mat_cluster_entry_orig_indexes[i])
 
-    ten_covariances = covariances.cluster_covariances(mat_entries, mat_cluster_entry_orig_indexes, mat_cluster_centers)
-    mat_cluster_entry_indexes = entry_cluster_assignment.\
-        mahalanobis_cluster_assignment(mat_entries, mat_cluster_centers, ten_covariances)
+    mat_cluster_entry_indexes = []
+    if distance == "Mahalanobis":
+        ten_covariances = covariances.cluster_covariances(mat_entries, mat_cluster_entry_orig_indexes, 
+                                                          mat_cluster_centers)
+        mat_cluster_entry_indexes = entry_cluster_assignment.\
+            mahalanobis_cluster_assignment(mat_entries, mat_cluster_centers, ten_covariances)
+    elif distance == "Manhattan":
+        mat_cluster_entry_indexes = entry_cluster_assignment.manhattan_cluster_assignment(mat_entries, 
+                                                                                          mat_cluster_centers)
 
     return clustering_results.ClusteringResults(mat_cluster_centers=mat_cluster_centers,
                                                 mat_cluster_entry_indexes=mat_cluster_entry_indexes)
 
 
-def cheat_clear_clustering(mat_entries, vec_check, var_count_clusters):
-    mat_cluster_entry_orig_indexes = []
-    for i in range(var_count_clusters):
-        mat_cluster_entry_orig_indexes.append([])
-
-    for i in range(len(vec_check)):
-        mat_cluster_entry_orig_indexes[vec_check[i]].append(i)
-
-    mat_cluster_centers = []
-    for i in range(var_count_clusters):
-        mat_cluster_centers.append([])
-        for j in range(len(mat_entries[0])):
-            mat_cluster_centers[i].append(0.0)
-
-    for i in range(var_count_clusters):
-        for inx in mat_cluster_entry_orig_indexes[i]:
-            for j in range(len(mat_entries[0])):
-                mat_cluster_centers[i][j] += mat_entries[inx][j]
-
-    for i in range(var_count_clusters):
-        for j in range(len(mat_entries[0])):
-            mat_cluster_centers[i][j] /= len(mat_cluster_entry_orig_indexes[i])
-
-    ten_covariances = covariances.cluster_covariances(mat_entries, mat_cluster_entry_orig_indexes, mat_cluster_centers)
-    mat_cluster_entry_indexes = entry_cluster_assignment.\
-        mahalanobis_cluster_assignment(mat_entries, mat_cluster_centers, ten_covariances)
-
-    return clustering_results.ClusteringResults(mat_cluster_centers=mat_cluster_centers,
-                                                mat_cluster_entry_indexes=mat_cluster_entry_indexes)
-
-
-def cheat_with_noises_clustering(mat_entries, vec_check, var_count_clusters, var_noise=0.1):
+def cheat_with_noises_clustering(mat_entries, vec_check, var_count_clusters, var_noise=0.1, distance="Mahalanobis"):
     mat_cluster_entry_orig_indexes = []
     for i in range(var_count_clusters):
         mat_cluster_entry_orig_indexes.append([])
@@ -127,9 +102,15 @@ def cheat_with_noises_clustering(mat_entries, vec_check, var_count_clusters, var
         for j in range(len(mat_entries[0])):
             mat_cluster_centers[i][j] /= len(mat_cluster_entry_orig_indexes[i])
 
-    ten_covariances = covariances.cluster_covariances(mat_entries, mat_cluster_entry_orig_indexes, mat_cluster_centers)
-    mat_cluster_entry_indexes = entry_cluster_assignment.\
-        mahalanobis_cluster_assignment(mat_entries, mat_cluster_centers, ten_covariances)
+    mat_cluster_entry_indexes = []
+    if distance == "Mahalanobis":
+        ten_covariances = covariances.cluster_covariances(mat_entries, mat_cluster_entry_orig_indexes,
+                                                          mat_cluster_centers)
+        mat_cluster_entry_indexes = entry_cluster_assignment. \
+            mahalanobis_cluster_assignment(mat_entries, mat_cluster_centers, ten_covariances)
+    elif distance == "Manhattan":
+        mat_cluster_entry_indexes = entry_cluster_assignment.manhattan_cluster_assignment(mat_entries,
+                                                                                          mat_cluster_centers)
 
     return clustering_results.ClusteringResults(mat_cluster_centers=mat_cluster_centers,
                                                 mat_cluster_entry_indexes=mat_cluster_entry_indexes)
