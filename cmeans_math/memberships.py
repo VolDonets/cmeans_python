@@ -116,12 +116,23 @@ def kulback_leibler_membership_matrix(mat_entries, mat_cluster_centers, ten_cova
             var_x_dist = 0.0
             var_cc_dist = 0.0
             if basic_distance == "Manhattan":
-                var_x_dist = distances.manhattan_distance(vec_absolute_center, mat_entries[j])
-                var_cc_dist = distances.manhattan_distance(vec_absolute_center, mat_cluster_centers[i])
+                var_x_dist = distributions.\
+                    cauchy_distribution(var_etta=1,
+                                        var_distance=distances.manhattan_distance(vec_absolute_center, mat_entries[j]))
+                var_cc_dist = distributions.\
+                    cauchy_distribution(var_etta=1,
+                                        var_distance=distances.manhattan_distance(vec_absolute_center,
+                                                                                  mat_cluster_centers[i]))
             elif basic_distance == "Mahalanobis":
-                var_x_dist = distances.mahalanobis_distance(vec_absolute_center, mat_entries[j], ten_covariances[i])
-                var_cc_dist = distances.mahalanobis_distance(vec_absolute_center, mat_cluster_centers[i],
-                                                             ten_covariances[i])
+                var_x_dist = distributions.\
+                    cauchy_distribution(var_etta=1,
+                                        var_distance=distances.mahalanobis_distance(vec_absolute_center, mat_entries[j],
+                                                                                    ten_covariances[i]))
+                var_cc_dist = distributions.\
+                    cauchy_distribution(var_etta=1,
+                                        var_distance=distances.mahalanobis_distance(vec_absolute_center,
+                                                                                    mat_cluster_centers[i],
+                                                                                    ten_covariances[i]))
             var_distance = divergences.kulback_leibler_divergence(var_cc_dist, var_x_dist)
             vec_cluster_distances.append(var_distance)
         mat_membership.append(vec_cluster_distances)
@@ -145,12 +156,23 @@ def cross_entropy_membership_matrix(mat_entries, mat_cluster_centers, ten_covari
             var_x_dist = 0.0
             var_cc_dist = 0.0
             if basic_distance == "Manhattan":
-                var_x_dist = distances.manhattan_distance(vec_absolute_center, mat_entries[j])
-                var_cc_dist = distances.manhattan_distance(vec_absolute_center, mat_cluster_centers[i])
+                var_x_dist = distributions. \
+                    cauchy_distribution(var_etta=1,
+                                        var_distance=distances.manhattan_distance(vec_absolute_center, mat_entries[j]))
+                var_cc_dist = distributions. \
+                    cauchy_distribution(var_etta=1,
+                                        var_distance=distances.manhattan_distance(vec_absolute_center,
+                                                                                  mat_cluster_centers[i]))
             elif basic_distance == "Mahalanobis":
-                var_x_dist = distances.mahalanobis_distance(vec_absolute_center, mat_entries[j], ten_covariances[i])
-                var_cc_dist = distances.mahalanobis_distance(vec_absolute_center, mat_cluster_centers[i],
-                                                             ten_covariances[i])
+                var_x_dist = distributions. \
+                    cauchy_distribution(var_etta=1,
+                                        var_distance=distances.mahalanobis_distance(vec_absolute_center, mat_entries[j],
+                                                                                    ten_covariances[i]))
+                var_cc_dist = distributions. \
+                    cauchy_distribution(var_etta=1,
+                                        var_distance=distances.mahalanobis_distance(vec_absolute_center,
+                                                                                    mat_cluster_centers[i],
+                                                                                    ten_covariances[i]))
             var_distance = divergences.cross_entropy(var_cc_dist, var_x_dist)
             vec_cluster_distances.append(var_distance)
         mat_membership.append(vec_cluster_distances)
