@@ -173,6 +173,33 @@ def inverse_mahalanobis_density(mat_membership, mat_entries, mat_cluster_centers
     return vec_densities
 
 
+def inverse_manhattan_density(mat_membership, mat_entries, mat_cluster_centers, mat_cluster_entry_indexes):
+    """
+    inverse_manhattan_density_j = 1/(count i) ∑i w_ji^(-1) * d_1(center_j, entry_i)
+
+    :param mat_membership: vector of vector membership values for the each cluster by entry
+    :param mat_entries: vector of entry vectors
+    :param mat_cluster_centers: vector of cluster centers vectors
+    :param ten_covariances: vector of covariances matrices
+    :param mat_cluster_entry_indexes: vector of vectors with cluster entry indexes
+    :return: vector of inverse mahalanobis densities
+    """
+
+    vec_densities = []
+    for j in range(len(mat_cluster_centers)):
+        var_density = 0.0
+        if len(mat_cluster_entry_indexes[j]) > 0:
+            for i in mat_cluster_entry_indexes[j]:
+                var_distance = distances.manhattan_distance(mat_cluster_centers[j],
+                                                            mat_entries[i])
+                var_density += var_distance / (mat_membership[j][i] + 0.000001)
+            var_density /= len(mat_cluster_entry_indexes[j])
+        else:
+            var_density = BIG_NUMBER
+        vec_densities.append(var_density)
+    return vec_densities
+
+
 def new_divergence_density(mat_entries, mat_cluster_centers,
                            ten_covariances, mat_cluster_entry_indexes,
                            get_divergence_membership_matrix_func=memberships.kulback_leibler_membership_matrix,
