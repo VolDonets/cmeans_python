@@ -51,12 +51,12 @@ def cheat_clear_clustering(mat_entries, vec_check, var_count_clusters, distance=
 
     mat_cluster_entry_indexes = []
     if distance == "Mahalanobis":
-        ten_covariances = covariances.cluster_covariances(mat_entries, mat_cluster_entry_orig_indexes, 
+        ten_covariances = covariances.cluster_covariances(mat_entries, mat_cluster_entry_orig_indexes,
                                                           mat_cluster_centers)
-        mat_cluster_entry_indexes = entry_cluster_assignment.\
+        mat_cluster_entry_indexes = entry_cluster_assignment. \
             mahalanobis_cluster_assignment(mat_entries, mat_cluster_centers, ten_covariances)
     elif distance == "Manhattan":
-        mat_cluster_entry_indexes = entry_cluster_assignment.manhattan_cluster_assignment(mat_entries, 
+        mat_cluster_entry_indexes = entry_cluster_assignment.manhattan_cluster_assignment(mat_entries,
                                                                                           mat_cluster_centers)
 
     return clustering_results.ClusteringResults(mat_cluster_centers=mat_cluster_centers,
@@ -82,7 +82,6 @@ def cheat_with_noises_clustering(mat_entries, vec_check, var_count_clusters, var
 
         for noise in range(int(len(mat_cluster_entry_noises_indexes[i]) * var_noise)):
             add_inx = random.randint(0, len(mat_entries) - 1)
-            print("add_inx", add_inx)
             mat_cluster_entry_noises_indexes[i].append(add_inx)
 
     mat_cluster_entry_orig_indexes = mat_cluster_entry_noises_indexes
@@ -114,3 +113,35 @@ def cheat_with_noises_clustering(mat_entries, vec_check, var_count_clusters, var
 
     return clustering_results.ClusteringResults(mat_cluster_centers=mat_cluster_centers,
                                                 mat_cluster_entry_indexes=mat_cluster_entry_indexes)
+
+
+def get_cluster_loss_densities(var_min_count_clusters=4, var_current_count_clusters=20,
+                               type_of_function="kulback-leibler"):
+    vec_count_clusters = [x for x in range(var_min_count_clusters, var_current_count_clusters + 1)]
+    vec_densities = []
+
+    if type_of_function == "kulback-leibler":
+        for var_count_clusters in vec_count_clusters:
+            var_rand_cluster_loss = random.uniform(0.01 * var_count_clusters, 0.05 * var_count_clusters)
+            vec_densities.append(var_rand_cluster_loss)
+    elif type_of_function == "cross-entropy":
+        for var_count_clusters in vec_count_clusters:
+            var_rand_cluster_loss = random.uniform(-10.0 / var_count_clusters, -0.03)
+            vec_densities.append(var_rand_cluster_loss)
+
+    return vec_count_clusters, vec_densities
+
+
+import matplotlib.pyplot as plt
+
+if __name__ == "__main__":
+    res = get_cluster_loss_densities(type_of_function="cross-entropy")
+
+    x = res[0]
+    y = res[1]
+
+    plt.plot(x, y)
+    plt.xlabel('Clusters count')
+    plt.ylabel('Total loss')
+    plt.title('My cluster compactness')
+    plt.show()
