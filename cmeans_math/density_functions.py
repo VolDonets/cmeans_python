@@ -213,7 +213,8 @@ def new_divergence_density(mat_entries, mat_cluster_centers,
         var_density = 0.0
         if len(mat_cluster_entry_indexes[j]) > 0:
             for i in mat_cluster_entry_indexes[j]:
-                var_density += mat_kl_membership[j][i]
+                var_minus_fix = -1.0 if mat_kl_membership[j][i] > 0 else 1.0
+                var_density += mat_kl_membership[j][i] * var_minus_fix
             var_density /= len(mat_cluster_entry_indexes[j])
         else:
             var_density = BIG_NUMBER
