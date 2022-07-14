@@ -170,19 +170,21 @@ def clustering_by_divergence_density(mat_entries, var_count_clusters, var_init_c
     vec_clusters_densities = []
 
     if density_func == "KulbackLeibler":
-        vec_clusters_densities = density_functions.new_divergence_density(mat_entries=mat_entries,
-                                                                          mat_cluster_centers=mat_cluster_centers,
-                                                                          ten_covariances=ten_covariances,
-                                                                          mat_cluster_entry_indexes=mat_cluster_entry_indexes,
-                                                                          get_divergence_membership_matrix_func=memberships.kulback_leibler_membership_matrix,
-                                                                          basic_distance=evolve_distance)
+        vec_clusters_densities = density_functions.\
+            new_divergence_density(mat_entries=mat_entries,
+                                   mat_cluster_centers=mat_cluster_centers,
+                                   ten_covariances=ten_covariances,
+                                   mat_cluster_entry_indexes=mat_cluster_entry_indexes,
+                                   get_divergence_membership_matrix_func=memberships.kulback_leibler_membership_matrix,
+                                   basic_distance=inner_evolve_distance)
     elif density_func == "CrossEntropy":
-        vec_clusters_densities = density_functions.new_divergence_density(mat_entries=mat_entries,
-                                                                          mat_cluster_centers=mat_cluster_centers,
-                                                                          ten_covariances=ten_covariances,
-                                                                          mat_cluster_entry_indexes=mat_cluster_entry_indexes,
-                                                                          get_divergence_membership_matrix_func=memberships.cross_entropy_membership_matrix,
-                                                                          basic_distance=evolve_distance)
+        vec_clusters_densities = density_functions.\
+            new_divergence_density(mat_entries=mat_entries,
+                                   mat_cluster_centers=mat_cluster_centers,
+                                   ten_covariances=ten_covariances,
+                                   mat_cluster_entry_indexes=mat_cluster_entry_indexes,
+                                   get_divergence_membership_matrix_func=memberships.cross_entropy_membership_matrix,
+                                   basic_distance=inner_evolve_distance)
 
     vec_total_densities = []
     vec_clusters_count = []
@@ -191,17 +193,30 @@ def clustering_by_divergence_density(mat_entries, var_count_clusters, var_init_c
     var_new_loss = sum(vec_clusters_densities) / var_init_count_clusters
 
     # loop for removing useless cluster centers
-    while var_init_count_clusters > var_count_clusters:
+    is_optimized_last_clusters = False
+    while var_init_count_clusters >= var_count_clusters:
 
         # do some clusters moving
         i = 0
-        while math.fabs(var_old_loss - var_new_loss) > MAX_LOSS_DELTA and i <= MAX_COUNT_TRAINING_STEPS:
+        is_run_once = True
+        while is_run_once:
+            is_run_once = (math.fabs(var_old_loss - var_new_loss) > MAX_LOSS_DELTA and i <= MAX_COUNT_TRAINING_STEPS)
             i += 1
             if evolve_distance == "Mahalanobis":
                 mat_membership = memberships.mahalanobis_membership_matrix(mat_entries, mat_cluster_centers,
                                                                            ten_covariances)
             elif evolve_distance == "Manhattan":
                 mat_membership = memberships.manhattan_membership_matrix(mat_entries, mat_cluster_centers)
+            elif evolve_distance == "KulbackLeibler":
+                mat_membership = memberships.kulback_leibler_membership_matrix(mat_entries=mat_entries,
+                                                                               mat_cluster_centers=mat_cluster_centers,
+                                                                               ten_covariances=ten_covariances,
+                                                                               basic_distance=inner_evolve_distance)
+            elif evolve_distance == "CrossEntropy":
+                mat_membership = memberships.cross_entropy_membership_matrix(mat_entries=mat_entries,
+                                                                             mat_cluster_centers=mat_cluster_centers,
+                                                                             ten_covariances=ten_covariances,
+                                                                             basic_distance=inner_evolve_distance)
             mat_membership = memberships.norm_membership_matrix_for_entries(mat_membership)
 
             cluster_centers.c_means_centers_moving(mat_cluster_centers, mat_entries, mat_membership,
