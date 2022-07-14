@@ -10,12 +10,13 @@ Functions:
     * inverse_mahalanobis_density: -//-
     * divergence_density: -//-
 """
+import math
 
 import distances
 import memberships
 
 
-BIG_NUMBER = 100.0
+BIG_NUMBER = 0.0
 
 
 def simple_manhattan_density(mat_entries, mat_cluster_centers, mat_cluster_entry_indexes):
