@@ -31,6 +31,26 @@ def confusion_matrix(mat_cluster_entry_indexes, vec_correct_entry_class):
     return mat_confusion
 
 
+def print_cluster_num(mat_cluster_entry_indexes, vec_correct_entry_class):
+    mat_correct_entry = []
+
+    print('\n\n\n___________________________')
+    print('recognized: ')
+    for i in range(len(mat_cluster_entry_indexes)):
+        print('cluster:', i)
+        print(mat_cluster_entry_indexes[i])
+        mat_correct_entry.append([])
+    print('\n___________________________\n\n')
+    print('real')
+    for i in range(len(vec_correct_entry_class)):
+        mat_correct_entry[vec_correct_entry_class[i]].append(i)
+    for i in range(len(mat_correct_entry)):
+        print('cluster:', i)
+        print(mat_correct_entry[i])
+
+    print('___________________________\n\n\n')
+
+
 def draw_roc_curve(mat_cluster_entry_indexes, vec_correct_entry_class, var_count_cluster):
     # to correct mat
     mat_correct_clusters = []
