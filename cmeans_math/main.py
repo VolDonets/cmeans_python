@@ -2,22 +2,35 @@ import cmeans_math.data_loads as data_loads
 import cmeans_math.clustering_by_moving as cl_by_moving
 import cmeans_math.clustering_by_evolve as cl_by_evolve
 import cmeans_math.clustering_by_move_evolve as cl_by_me
+import cmeans_math.new_clustering_by_me as new_cl_me
 import accuracies
 import cmeans_math.cheat_clustering as cheat_clustering
 import cmeans_math.divergences as divergences
+import cmeans_math.data_preprocessing as dp
 
 import matplotlib.pyplot as plt
 from itertools import combinations
 
 # dataset = data_loads.load_urology_cleaned()
 # dataset = data_loads.load_iris_data()
+# dataset = data_loads.load_from_csv('test_data/economical_data/minmax_scaler_range01.csv', 'cluster', ['Country Name'])
+# dataset = data_loads.load_from_csv('test_data/economical_data/economical_pca_95pr.csv', 'cluster', ['no'])
+
+dataset = data_loads.load_from_csv('test_data/urology_prepared/standard_scaler.csv', 'cluster', ['Unnamed: 0'])
+
+print(dataset.mat_entries)
 
 # dataset = data_loads.load_from_csv('test_data/urology_prepared/minmax_scaler_range3_iqr_clear.csv', 'cluster',
 #                                    ['Unnamed: 0'])
 
 # TESTING on the economical data
-dataset = data_loads.load_from_csv('test_data/economical_data/minmax_scaler_range01.csv', 'cluster', ['Country Name'])
+# dataset = data_loads.load_from_csv('test_data/economical_data/minmax_scaler_range01.csv', 'cluster', ['Country Name'])
 
+
+# obj_results0 = new_cl_me.clustering_by_density(mat_entries=dataset.mat_entries,
+#                                                var_min_count_clusters=4,
+#                                                var_init_count_clusters=20,
+#                                                distance="SimpleManhattan")
 
 # obj_results0 = cl_by_me.clustering_by_simple_mahalanobis_density(mat_entries=dataset.mat_entries,
 #                                                                  var_min_count_clusters=4,
@@ -38,7 +51,10 @@ obj_results0 = cl_by_me.clustering_by_divergence_density(mat_entries=dataset.mat
                                                          var_count_clusters=4,
                                                          density_func="KulbackLeibler",
                                                          # density_func="CrossEntropy",
-                                                         evolve_distance="Manhattan")
+                                                         # evolve_distance="Manhattan")
+                                                         evolve_distance="Mahalanobis")
+                                                         # evolve_distance="KulbackLeibler")
+                                                         # evolve_distance="CrossEntropy")
 
 
 # obj_results = cheat_clustering.show_data_set(mat_entries=dataset.mat_entries,
@@ -52,9 +68,9 @@ obj_results0 = cl_by_me.clustering_by_divergence_density(mat_entries=dataset.mat
 obj_results = cheat_clustering.cheat_with_noises_clustering(mat_entries=dataset.mat_entries,
                                                             vec_check=dataset.vec_check,
                                                             var_count_clusters=4,
-                                                            var_noise=0.15,
-                                                            # distance="Mahalanobis")
-                                                            distance="Manhattan")
+                                                            var_noise=0.2,
+                                                            distance="Mahalanobis")
+                                                            # distance="Manhattan")
 
 obj_results.vec_cluster_count = obj_results0.vec_cluster_count
 obj_results.vec_total_losses = obj_results0.vec_total_losses
@@ -62,33 +78,13 @@ obj_results.vec_total_losses = obj_results0.vec_total_losses
 var_accuracy = accuracies.accuracy(obj_results.mat_cluster_entry_indexes, dataset.vec_check)
 mat_confusion = accuracies.confusion_matrix(obj_results.mat_cluster_entry_indexes, dataset.vec_check)
 
+for i in range(len(obj_results.vec_cluster_count)):
+    print(obj_results.vec_cluster_count[i], '--', obj_results.vec_total_losses[i])
+
 print("accuracy:", var_accuracy)
 print("Confusion")
 for vec_confusion in mat_confusion:
     print(vec_confusion)
-
-accuracies.draw_3d_clusters(obj_results.mat_cluster_centers, dataset.mat_entries,
-                            obj_results.mat_cluster_entry_indexes,
-                            vec_param_names=dataset.vec_param_names,
-                            vec_params=[0, 3, 10])
-
-accuracies.draw_3d_clusters(obj_results.mat_cluster_centers, dataset.mat_entries,
-                            obj_results.mat_cluster_entry_indexes,
-                            vec_param_names=dataset.vec_param_names,
-                            vec_params=[15, 17, 27])
-
-accuracies.draw_3d_clusters(obj_results.mat_cluster_centers, dataset.mat_entries,
-                            obj_results.mat_cluster_entry_indexes,
-                            vec_param_names=dataset.vec_param_names,
-                            vec_params=[13, 19, 30])
-
-accuracies.draw_roc_curve(obj_results.mat_cluster_entry_indexes,
-                          dataset.vec_check,
-                          4)
-
-accuracies.draw_multilabel_roc_curve(obj_results.mat_cluster_entry_indexes,
-                                     dataset.vec_check,
-                                     4)
 
 print(obj_results.mat_cluster_entry_indexes)
 print(dataset.vec_check)
@@ -111,6 +107,41 @@ elif len(obj_results.vec_step_number) > 0:
     plt.ylabel('Loss')
     plt.title('Loss changing')
     plt.show()
+
+accuracies.draw_3d_clusters(obj_results.mat_cluster_centers, dataset.mat_entries,
+                            obj_results.mat_cluster_entry_indexes,
+                            vec_param_names=dataset.vec_param_names,
+                            # vec_params=[0, 1, 10])
+                            # vec_params=[0, 1, 2])
+                            # vec_params=[0, 1, 4])
+                            # medical
+                            vec_params=[0, 3, 7])
+
+accuracies.draw_3d_clusters(obj_results.mat_cluster_centers, dataset.mat_entries,
+                            obj_results.mat_cluster_entry_indexes,
+                            vec_param_names=dataset.vec_param_names,
+                            # vec_params=[15, 17, 27])
+                            # vec_params=[1, 2, 3])
+                            # vec_params=[7, 10, 11])
+                            # medical
+                            vec_params=[7, 10, 17])
+
+accuracies.draw_3d_clusters(obj_results.mat_cluster_centers, dataset.mat_entries,
+                            obj_results.mat_cluster_entry_indexes,
+                            vec_param_names=dataset.vec_param_names,
+                            # vec_params=[13, 19, 30])
+                            # vec_params=[0, 2, 3])
+                            # vec_params=[13, 15, 17])
+                            # medical
+                            vec_params=[11, 12, 21])
+
+accuracies.draw_roc_curve(obj_results.mat_cluster_entry_indexes,
+                          dataset.vec_check,
+                          4)
+
+accuracies.draw_multilabel_roc_curve(obj_results.mat_cluster_entry_indexes,
+                                     dataset.vec_check,
+                                     4)
 
 vec_colors = ['blue', 'red', 'pink', 'green', 'orange', 'lime', 'purple',
               'aqua', 'navy', 'coral', 'teal', 'mustard', 'black',
@@ -152,26 +183,55 @@ for i in range(int(len(mat_axis_orig) / 6)):
     inx_from = i * 6
     inx_to = i * 6 + 6
     inx_to = inx_to if inx_to <= len(mat_axis_orig) else len(mat_axis_orig)
-    # mat_axis = mat_axis_orig[inx_from:inx_to]
-    # print('inx: ', inx_from, inx_to)
+    mat_axis = mat_axis_orig[inx_from:inx_to]
+    # print('inx: ', mat_axis, '\n\n\n\n')
+
+    #medical urology
+    mat_axis = [
+        (0, 10),
+        (1, 7),
+        (3, 10),
+        (7, 12),
+        (11, 12),
+        (17, 21),
+    ]
 
     # mat_axis = [mat_axis_orig[0],
-    #             mat_axis_orig[6],
+    #             # mat_axis_orig[6],
     #             mat_axis_orig[20],
     #             mat_axis_orig[50],
     #             mat_axis_orig[69],
-    #             mat_axis_orig[135]]
+    #             mat_axis_orig[135],
+    #             mat_axis_orig[170]]
 
     # interested params:
     # 0 3 10 15 17 27 30
-    mat_axis = [
-        (0, 3),
-        (4, 7),
-        (10, 15),
-        (17, 27),
-        (19, 30),
-        (12, 13)
-    ]
+    # mat_axis = [
+    #     (0, 3),
+    #     (4, 7),
+    #     (10, 15),
+    #     (17, 27),
+    #     (19, 30),
+    #     (12, 13)
+    # ]
+
+    # mat_axis = [
+    #     (0, 1),
+    #     (0, 2),
+    #     (0, 3),
+    #     (1, 2),
+    #     (1, 3),
+    #     (2, 3)
+    # ]
+
+    # mat_axis = [
+    #     (0, 4),
+    #     (1, 2),
+    #     (3, 4),
+    #     (1, 3),
+    #     (1, 4),
+    #     (2, 3)
+    # ]
 
     plt.figure(figsize=(10, 6))
     plt.title('Clustering Results')
