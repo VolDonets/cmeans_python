@@ -64,6 +64,7 @@ def cheat_clear_clustering(mat_entries, vec_check, var_count_clusters, distance=
 
 
 def cheat_with_noises_clustering(mat_entries, vec_check, var_count_clusters, var_noise=0.1, distance="Mahalanobis"):
+    ten_covariances = []
     mat_cluster_entry_orig_indexes = []
     for i in range(var_count_clusters):
         mat_cluster_entry_orig_indexes.append([])
@@ -112,7 +113,8 @@ def cheat_with_noises_clustering(mat_entries, vec_check, var_count_clusters, var
                                                                                           mat_cluster_centers)
 
     return clustering_results.ClusteringResults(mat_cluster_centers=mat_cluster_centers,
-                                                mat_cluster_entry_indexes=mat_cluster_entry_indexes)
+                                                mat_cluster_entry_indexes=mat_cluster_entry_indexes,
+                                                ten_covariances=ten_covariances)
 
 
 def get_cluster_loss_densities(var_min_count_clusters=4, var_current_count_clusters=20,
