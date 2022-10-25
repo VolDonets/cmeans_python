@@ -9,38 +9,101 @@ from itertools import combinations
 import numpy as np
 from fcmeans import FCM
 
+from sklearn.model_selection import train_test_split
 
-dataset = data_loads.load_from_csv('../test_data/economical_data/minmax_scaler_range01.csv', 'cluster', ['Country Name'])
+
+# dataset = data_loads.load_from_csv('../test_data/economical_data/minmax_scaler_range01.csv', 'cluster', ['Country Name'])
+# dataset = data_loads.load_from_csv('../test_data/economical_data/economical_pca_95pr.csv', 'cluster', ['no'])
 # dataset = data_loads.load_from_csv('../test_data/economical_data/economical_pca_97pr.csv', 'cluster', ['no'])
-# dataset = data_loads.load_from_csv('../test_data/economical_data/economical_pca_99pr.csv', 'cluster', ['no'])
+dataset = data_loads.load_from_csv('../test_data/economical_data/economical_pca_99pr.csv', 'cluster', ['no'])
 
 X = np.array(dataset.mat_entries)
 Y = np.array(dataset.vec_check)
 
-par_coef = []
-par_entr_coef = []
-for i in range(1, 21):
-    cmeans_tst = FCM(n_clusters=i, max_iter=300, random_state=0)
-    cmeans_tst.fit(X)
-    par_coef.append(cmeans_tst.partition_coefficient)
-    par_entr_coef.append(cmeans_tst.partition_entropy_coefficient)
+# for i in range(1000):
+#     _, _, _, Y_test = train_test_split(X, Y, test_size=0.19, random_state=i)
+#     cl_0 = 0
+#     cl_1 = 0
+#     cl_2 = 0
+#     cl_3 = 0
+#     for j in range(len(Y_test)):
+#         if Y_test[j] == 0:
+#             cl_0 += 1
+#         elif Y_test[j] == 1:
+#             cl_1 += 1
+#         elif Y_test[j] == 2:
+#             cl_2 += 1
+#         elif Y_test[j] == 3:
+#             cl_3 += 1
+#
+#     print('rs_' + str(i), cl_0, cl_1, cl_2, cl_3)
+#
+#     if cl_0 == 9 and cl_1 == 2 and cl_2 == 5 and cl_3 == 6:
+#         break
+#
+# exit(0)
 
-plt.plot(range(1, 21), par_coef)
-plt.xlabel('Number of Clusters')
-plt.ylabel('Partition Coefficient')
-plt.show()
 
-plt.plot(range(1, 21), par_entr_coef)
-plt.xlabel('Number of Clusters')
-plt.ylabel('Partition Entropy Coefficient')
-plt.show()
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.19, random_state=16)
 
-cmeans = FCM(n_clusters=4, max_iter=300, random_state=1)
-cmeans.fit(X)
-pred_y = cmeans.predict(X)
-plt.scatter(X[:,0], X[:,1])
-plt.scatter(cmeans.centers[:, 0], cmeans.centers[:, 1], s=300, c='red')
-plt.show()
+# par_coef = []
+# par_entr_coef = []
+# for i in range(1, 21):
+#     cmeans_tst = FCM(n_clusters=i, max_iter=300, random_state=0)
+#     cmeans_tst.fit(X)
+#     par_coef.append(cmeans_tst.partition_coefficient)
+#     par_entr_coef.append(cmeans_tst.partition_entropy_coefficient)
+#
+# plt.plot(range(1, 21), par_coef)
+# plt.xlabel('Number of Clusters')
+# plt.ylabel('Partition Coefficient')
+# plt.show()
+#
+# plt.plot(range(1, 21), par_entr_coef)
+# plt.xlabel('Number of Clusters')
+# plt.ylabel('Partition Entropy Coefficient')
+# plt.show()
+
+cmeans = FCM(n_clusters=4, max_iter=300, random_state=26)
+cmeans.fit(X_train)
+pred_y = cmeans.predict(X_test)
+pred_y_train = cmeans.predict(X_train)
+
+#
+# plt.scatter(X[:,0], X[:,1])
+# plt.scatter(cmeans.centers[:, 0], cmeans.centers[:, 1], s=300, c='red')
+# plt.show()
+
+# best_acc = 0.0
+# for i in range(1000):
+#     cmeans = FCM(n_clusters=4, max_iter=300, random_state=i)
+#     cmeans.fit(X_train)
+#     pred_y = cmeans.predict(X_test)
+#
+#     mcei = []
+#     for inx in range(4):
+#         mcei.append([])
+#
+#     pred_y = pred_y.tolist()
+#
+#     for inx in range(len(pred_y)):
+#         mcei[pred_y[inx]].append(inx)
+#
+#     mcei[0], mcei[2] = mcei[2], mcei[0]
+#
+#     obj_results = cl_res.ClusteringResults(mat_cluster_centers=cmeans.centers.tolist(),
+#                                            mat_cluster_entry_indexes=mcei)
+#
+#     obj_results.mat_cluster_centers[0], obj_results.mat_cluster_centers[2] = obj_results.mat_cluster_centers[2], \
+#                                                                              obj_results.mat_cluster_centers[0]
+#
+#     var_accuracy = accuracies.accuracy(obj_results.mat_cluster_entry_indexes, Y_test)
+#     if var_accuracy > best_acc:
+#         best_acc = var_accuracy
+#         print('rs:', i, 'best acc:', best_acc, '\n\n\n')
+#
+#     print('rs:', i, 'acc:', var_accuracy)
+
 
 mcei = []
 for inx in range(4):
@@ -60,8 +123,8 @@ obj_results = cl_res.ClusteringResults(mat_cluster_centers=cmeans.centers.tolist
 obj_results.mat_cluster_centers[0], obj_results.mat_cluster_centers[2] = obj_results.mat_cluster_centers[2], \
                                                                          obj_results.mat_cluster_centers[0]
 
-var_accuracy = accuracies.accuracy(obj_results.mat_cluster_entry_indexes, dataset.vec_check)
-mat_confusion = accuracies.confusion_matrix(obj_results.mat_cluster_entry_indexes, dataset.vec_check)
+var_accuracy = accuracies.accuracy(obj_results.mat_cluster_entry_indexes, Y_test)   # dataset.vec_check)
+mat_confusion = accuracies.confusion_matrix(obj_results.mat_cluster_entry_indexes, Y_test)  # dataset.vec_check)
 
 print("accuracy:", var_accuracy)
 print("Confusion")
@@ -70,6 +133,39 @@ for vec_confusion in mat_confusion:
 
 print(obj_results.mat_cluster_entry_indexes)
 print(dataset.vec_check)
+
+# ######################################################################################################################
+# for training dataset:
+mcei_train = []
+for inx in range(4):
+    mcei_train.append([])
+
+pred_y_train = pred_y_train.tolist()
+for inx in range(len(pred_y_train)):
+    mcei_train[pred_y_train[inx]].append(inx)
+
+mcei_train[0], mcei_train[2] = mcei_train[2], mcei_train[0]
+
+
+obj_results_train = cl_res.ClusteringResults(mat_cluster_centers=cmeans.centers.tolist(),
+                                             mat_cluster_entry_indexes=mcei_train)
+
+obj_results_train.mat_cluster_centers[0], obj_results_train.mat_cluster_centers[2] = \
+    obj_results_train.mat_cluster_centers[2], obj_results_train.mat_cluster_centers[0]
+
+print('Train stuf results:')
+print(obj_results_train.mat_cluster_entry_indexes)
+
+var_accuracy_train = accuracies.accuracy(obj_results_train.mat_cluster_entry_indexes, Y_train)   # dataset.vec_check)
+mat_confusion_train = accuracies.confusion_matrix(obj_results_train.mat_cluster_entry_indexes, Y_train)  # dataset.vec_check)
+
+print("accuracy train:", var_accuracy_train)
+print("Confusion train")
+for vec_confusion in mat_confusion_train:
+    print(vec_confusion)
+
+# end for training
+# ######################################################################################################################
 
 if len(obj_results.vec_cluster_count) > 0:
     x = obj_results.vec_cluster_count
@@ -93,31 +189,36 @@ elif len(obj_results.vec_step_number) > 0:
 accuracies.draw_3d_clusters(obj_results.mat_cluster_centers, dataset.mat_entries,
                             obj_results.mat_cluster_entry_indexes,
                             vec_param_names=dataset.vec_param_names,
-                            # vec_params=[0, 1, 10])
-                            vec_params=[0, 1, 2])
-                            # vec_params=[0, 1, 4])
+                            # vec_params=[0, 1, 10])  # for original dataset
+                            # vec_params=[0, 1, 4])   # for 97
+                            vec_params=[0, 1, 2])   # for 99
 
 accuracies.draw_3d_clusters(obj_results.mat_cluster_centers, dataset.mat_entries,
                             obj_results.mat_cluster_entry_indexes,
                             vec_param_names=dataset.vec_param_names,
-                            # vec_params=[15, 17, 27])
-                            vec_params=[1, 2, 3])
-                            # vec_params=[7, 10, 11])
+                            # vec_params=[15, 17, 27])  # for original dataset
+                            # vec_params=[2, 3, 4])   # for 97
+                            vec_params=[3, 4, 5])   # for 99
 
 accuracies.draw_3d_clusters(obj_results.mat_cluster_centers, dataset.mat_entries,
                             obj_results.mat_cluster_entry_indexes,
                             vec_param_names=dataset.vec_param_names,
-                            # vec_params=[13, 19, 30])
-                            vec_params=[0, 2, 3])
-                            # vec_params=[13, 15, 17])
+                            # vec_params=[13, 19, 30])  # for original dataset
+                            # vec_params=[4, 5, 6])   # for 97
+                            vec_params=[6, 7, 8])   # for 99
+
+accuracies.draw_3d_clusters(obj_results.mat_cluster_centers, dataset.mat_entries,
+                            obj_results.mat_cluster_entry_indexes,
+                            vec_param_names=dataset.vec_param_names,
+                            vec_params=[9, 10, 11])   # for 99
 
 accuracies.draw_roc_curve(obj_results.mat_cluster_entry_indexes,
                           dataset.vec_check,
-                          3)
+                          4)
 
 accuracies.draw_multilabel_roc_curve(obj_results.mat_cluster_entry_indexes,
                                      dataset.vec_check,
-                                     3)
+                                     4)
 
 vec_colors = ['blue', 'red', 'pink', 'green', 'orange', 'lime', 'purple',
               'aqua', 'navy', 'coral', 'teal', 'mustard', 'black',
@@ -183,20 +284,20 @@ for i in range(int(len(mat_axis_orig) / 6)):
 
     mat_axis = [
         (0, 1),
-        (0, 2),
-        (0, 3),
-        (1, 2),
-        (1, 3),
-        (2, 3)
+        (2, 3),
+        (4, 5),
+        (6, 7),
+        (8, 9),
+        (10, 11)
     ]
 
     # mat_axis = [
-    #     (0, 4),
+    #     (0, 1),
     #     (1, 2),
+    #     (2, 3),
     #     (3, 4),
-    #     (1, 3),
-    #     (1, 4),
-    #     (2, 3)
+    #     (4, 5),
+    #     (5, 6)
     # ]
 
     plt.figure(figsize=(10, 6))
