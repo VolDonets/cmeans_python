@@ -2,12 +2,17 @@ import numpy as np
 from fcmeans import FCM
 from jax import random
 
+from cmeans_math.covariances import cluster_covariances
+from cmeans_math.distances import mahalanobis_distance
+
 
 class FCM_coef(FCM):
     def __init__(self, mat_X, *args, **kwargs):
         super(FCM_coef, self).__init__(*args, **kwargs)
         self.X = mat_X
         self.n_samples = 0
+        self.tensor_covariances = None
+        self.mat_cei = None
 
     def fit(self):
         self.n_samples = self.X.shape[0]
@@ -20,6 +25,18 @@ class FCM_coef(FCM):
             # Stopping rule
             if np.linalg.norm(self.u - u_old) < self.error:
                 break
+
+        prediction = self.__predict(X).argmax(axis=-1)
+        self.mat_cei = []
+        for inx in range(self.n_clusters):
+            self.mat_cei.append([])
+
+        for inx in range(len(prediction)):
+            self.mat_cei[prediction[inx]].append(inx)
+
+        self.tensor_covariances = cluster_covariances(mat_entries=self.X,
+                                                      mat_cluster_centers=self.centers,
+                                                      mat_cluster_entry_indexes=self.mat_cei)
 
     def __predict(self, X):
         """
@@ -83,6 +100,46 @@ class FCM_coef(FCM):
         else:
             raise ReferenceError("You need to train the model first. You can use `.fit()` method to this.")
 
+    @property
+    def mahalanobis_inverse_coefficient(self):
+        if hasattr(self, 'u'):
+            val_coef = 0.0
+            for cl in range(self.n_clusters):
+                val_cl_coef = 0.0
+                for el in self.mat_cei[cl]:
+                    val_cl_coef += mahalanobis_distance(X[el], self.centers[cl],
+                                                        self.tensor_covariances[cl]) / self.u[el][cl]
+                val_coef += val_cl_coef / len(self.mat_cei[cl])
+            return val_coef / self.n_clusters
+        else:
+            raise ReferenceError("You need to train the model first. You can use `.fit()` method to this.")
+
+    @property
+    def mahalanobis_coefficient(self):
+        val_coef = 0.0
+        for cl in range(self.n_clusters):
+            val_cl_coef = 0.0
+            for el in self.mat_cei[cl]:
+                val_cl_coef += mahalanobis_distance(X[el], self.centers[cl],
+                                                    self.tensor_covariances[cl])
+            val_coef += val_cl_coef / len(self.mat_cei[cl])
+        return val_coef / self.n_clusters
+
+    @property
+    def kulback_leibler_coefficient(self):
+        if hasattr(self, 'u'):
+            var_klc = 0.0
+            for el in range(self.X.shape[0]):
+                var_klc_el = 0.0
+                for cl in range(self.n_clusters):
+                    for cl_r in range(self.n_clusters):
+                        var_klc_el += self.u[el][cl] * np.log(self.u[el][cl] / (self.u[el][cl_r] + 0.000000001))
+                var_klc -= var_klc_el / self.n_clusters
+
+            return var_klc / self.n_clusters
+        else:
+            raise ReferenceError("You need to train the model first. You can use `.fit()` method to this.")
+
 
 if __name__ == '__main__':
     import cmeans_math.data_loads as data_loads
@@ -100,6 +157,9 @@ if __name__ == '__main__':
     pc = []
     pec = []
     pcaes = []
+    mah = []
+    mah_inv = []
+    klc = []
     for i in range(1, 21):
         cmeans_tst = FCM_coef(mat_X=X, n_clusters=i, max_iter=300, random_state=1)
         cmeans_tst.fit()
@@ -107,6 +167,28 @@ if __name__ == '__main__':
         pc.append(cmeans_tst.partition_coefficient)
         pec.append(cmeans_tst.partition_entropy_coefficient)
         pcaes.append(cmeans_tst.partition_coef_exp_sep)
+        mah.append(cmeans_tst.mahalanobis_coefficient)
+        mah_inv.append(cmeans_tst.mahalanobis_inverse_coefficient)
+        klc.append(cmeans_tst.kulback_leibler_coefficient)
+        print('OK', i)
+
+    plt.plot(range(1, 21), klc)
+    plt.xlabel('Clusters count')
+    plt.ylabel('Total loss')
+    plt.title('My cluster compactness')
+    plt.show()
+
+    plt.plot(range(1, 21), mah)
+    plt.xlabel('Clusters count')
+    plt.ylabel('Total loss')
+    plt.title('My cluster compactness')
+    plt.show()
+
+    plt.plot(range(1, 21), mah_inv)
+    plt.xlabel('Clusters count')
+    plt.ylabel('Total loss')
+    plt.title('My cluster compactness')
+    plt.show()
 
     plt.plot(range(1, 21), pcaes)
     plt.xlabel('Clusters count')
