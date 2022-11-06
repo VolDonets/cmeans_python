@@ -26,7 +26,7 @@ class FCM_coef(FCM):
             if np.linalg.norm(self.u - u_old) < self.error:
                 break
 
-        prediction = self.__predict(X).argmax(axis=-1)
+        prediction = self.__predict(self.X).argmax(axis=-1)
         self.mat_cei = []
         for inx in range(self.n_clusters):
             self.mat_cei.append([])
@@ -107,7 +107,7 @@ class FCM_coef(FCM):
             for cl in range(self.n_clusters):
                 val_cl_coef = 0.0
                 for el in self.mat_cei[cl]:
-                    val_cl_coef += mahalanobis_distance(X[el], self.centers[cl],
+                    val_cl_coef += mahalanobis_distance(self.X[el], self.centers[cl],
                                                         self.tensor_covariances[cl]) / self.u[el][cl]
                 val_coef += val_cl_coef / len(self.mat_cei[cl])
             return val_coef / self.n_clusters
@@ -120,7 +120,7 @@ class FCM_coef(FCM):
         for cl in range(self.n_clusters):
             val_cl_coef = 0.0
             for el in self.mat_cei[cl]:
-                val_cl_coef += mahalanobis_distance(X[el], self.centers[cl],
+                val_cl_coef += mahalanobis_distance(self.X[el], self.centers[cl],
                                                     self.tensor_covariances[cl])
             val_coef += val_cl_coef / len(self.mat_cei[cl])
         return val_coef / self.n_clusters
