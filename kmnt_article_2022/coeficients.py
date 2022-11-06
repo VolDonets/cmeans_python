@@ -109,7 +109,8 @@ class FCM_coef(FCM):
                 for el in self.mat_cei[cl]:
                     val_cl_coef += mahalanobis_distance(self.X[el], self.centers[cl],
                                                         self.tensor_covariances[cl]) / self.u[el][cl]
-                val_coef += val_cl_coef / len(self.mat_cei[cl])
+                if len(self.mat_cei[cl]) != 0:
+                    val_coef += val_cl_coef / len(self.mat_cei[cl])
             return val_coef / self.n_clusters
         else:
             raise ReferenceError("You need to train the model first. You can use `.fit()` method to this.")
@@ -122,7 +123,8 @@ class FCM_coef(FCM):
             for el in self.mat_cei[cl]:
                 val_cl_coef += mahalanobis_distance(self.X[el], self.centers[cl],
                                                     self.tensor_covariances[cl])
-            val_coef += val_cl_coef / len(self.mat_cei[cl])
+            if len(self.mat_cei[cl]) != 0:
+                val_coef += val_cl_coef / len(self.mat_cei[cl])
         return val_coef / self.n_clusters
 
     @property
