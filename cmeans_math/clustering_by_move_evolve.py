@@ -25,7 +25,7 @@ CLUSTERING_TYPE = 2
 
 
 def clustering_by_simple_mahalanobis_density(mat_entries, var_min_count_clusters, var_init_count_clusters,
-                                             evolve_distance="Mahalanobis"):
+                                             evolve_distance="Mahalanobis", clustering_type=CLUSTERING_TYPE):
     # generate random init cluster centers
     mat_cluster_centers = cluster_centers.random_cluster_centers(mat_entries=mat_entries,
                                                                  var_count_clusters=var_init_count_clusters)
@@ -38,25 +38,25 @@ def clustering_by_simple_mahalanobis_density(mat_entries, var_min_count_clusters
     ten_covariances = covariances.cluster_covariances(mat_entries, mat_cluster_entry_indexes, mat_cluster_centers)
 
     # get densities for the each cluster
-    if CLUSTERING_TYPE == -1:
+    if clustering_type == -1:
         vec_clusters_densities = density_functions.simple_manhattan_density(mat_entries, mat_cluster_centers,
                                                                             mat_cluster_entry_indexes)
-    elif CLUSTERING_TYPE == 0:
+    elif clustering_type == 0:
         mat_membership = memberships.mahalanobis_membership_matrix(mat_entries, mat_cluster_centers, ten_covariances)
         vec_clusters_densities = density_functions.manhattan_density(mat_membership, mat_entries, mat_cluster_centers,
                                                                      mat_cluster_entry_indexes)
-    elif CLUSTERING_TYPE == 1:
+    elif clustering_type == 1:
         vec_clusters_densities = density_functions.simple_mahalanobis_density(mat_entries, mat_cluster_centers,
                                                                               ten_covariances,
                                                                               mat_cluster_entry_indexes)
-    elif CLUSTERING_TYPE == 2:
+    elif clustering_type == 2:
         mat_membership = memberships.mahalanobis_membership_matrix(mat_entries, mat_cluster_centers, ten_covariances)
         mat_membership = memberships.norm_membership_matrix_for_entries(mat_membership)
         vec_clusters_densities = density_functions.inverse_mahalanobis_density(mat_membership, mat_entries,
                                                                                mat_cluster_centers,
                                                                                ten_covariances,
                                                                                mat_cluster_entry_indexes)
-    elif CLUSTERING_TYPE == 3:
+    elif clustering_type == 3:
         mat_membership = memberships.manhattan_membership_matrix(mat_entries, mat_cluster_centers)
         mat_membership = memberships.norm_membership_matrix_for_entries(mat_membership)
         vec_clusters_densities = density_functions.inverse_manhattan_density(mat_membership, mat_entries,
@@ -94,20 +94,20 @@ def clustering_by_simple_mahalanobis_density(mat_entries, var_min_count_clusters
             ten_covariances = covariances.cluster_covariances(mat_entries, mat_cluster_entry_indexes,
                                                               mat_cluster_centers)
 
-            if CLUSTERING_TYPE == -1:
+            if clustering_type == -1:
                 vec_clusters_densities = density_functions.simple_manhattan_density(mat_entries, mat_cluster_centers,
                                                                                     mat_cluster_entry_indexes)
-            elif CLUSTERING_TYPE == 0:
+            elif clustering_type == 0:
                 mat_membership = memberships.mahalanobis_membership_matrix(mat_entries, mat_cluster_centers,
                                                                            ten_covariances)
                 vec_clusters_densities = density_functions.manhattan_density(mat_membership, mat_entries,
                                                                              mat_cluster_centers,
                                                                              mat_cluster_entry_indexes)
-            elif CLUSTERING_TYPE == 1:
+            elif clustering_type == 1:
                 vec_clusters_densities = density_functions.simple_mahalanobis_density(mat_entries, mat_cluster_centers,
                                                                                       ten_covariances,
                                                                                       mat_cluster_entry_indexes)
-            elif CLUSTERING_TYPE == 2:
+            elif clustering_type == 2:
                 mat_membership = memberships.mahalanobis_membership_matrix(mat_entries, mat_cluster_centers,
                                                                            ten_covariances)
                 mat_membership = memberships.norm_membership_matrix_for_entries(mat_membership)
@@ -115,7 +115,7 @@ def clustering_by_simple_mahalanobis_density(mat_entries, var_min_count_clusters
                                                                                        mat_cluster_centers,
                                                                                        ten_covariances,
                                                                                        mat_cluster_entry_indexes)
-            elif CLUSTERING_TYPE == 3:
+            elif clustering_type == 3:
                 mat_membership = memberships.manhattan_membership_matrix(mat_entries, mat_cluster_centers)
                 mat_membership = memberships.norm_membership_matrix_for_entries(mat_membership)
                 vec_clusters_densities = density_functions.inverse_manhattan_density(mat_membership, mat_entries,
